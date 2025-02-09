@@ -4,7 +4,7 @@
 #### #ClassLoader 
 JVM 아키텍처의 첫 번째 주요 구성요소로써 Loading -> Linking -> initialization 단계를 거침.
 클래스 로더는 .java에서 컴파일된 .class 파일을 메모리의 Method Area에 로드하는 역할을 수행
-#### 1.[[Loading]]
+#### 1.[[Loading]]****
 #### 2.Linking
 1.  검증 (Verify)
 	- 가장 오래 걸리는 과정으로, 메모리로 로드된 바이트 코드가 JVM 스펙, 자바 언어 스펙을 따르는지 검증
@@ -18,7 +18,7 @@ JVM 아키텍처의 첫 번째 주요 구성요소로써 Loading -> Linking -> i
 클래스 로딩 마지막 단계로써 준비 단계에서 확보한 메모리 영역의 모든 정적 변수에 자바 코드에 명시된 값이 할당됨.
 
 
-#### Runtime Data Area
+#### Runtime Data **Area**
 JVM에 .class 파일을 저장하고 실행하기 위한 메모리 영역
 (.class 파일은 클래스 로더에 의해 JVM내 로드되고 실행엔진에 의해 기계어로 해석되어 Runtime Data Area에 배치됨.)
 ![[Pasted image 20240313105901.png]]
