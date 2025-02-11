@@ -1,0 +1,1 @@
+Reactor 공식 문서에서 자주 언급되는 용어로 Operator에서 리턴하는 새로운 Mono 또는 Flux가 서언된 지점을 Assembly라고 한다.

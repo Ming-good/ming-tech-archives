@@ -1,0 +1,1 @@
+디버그 모드를 활성화하면 Operator의 [[Assembly]]를 캡쳐하 게 된다. 이주에서 에러가 발생한 Operator의 스택트레이스를 캡처한 [[Assembly]]의 정보를 Traceback이라고 한다.
