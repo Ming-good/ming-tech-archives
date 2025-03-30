@@ -1,6 +1,6 @@
 {
   "collapse-filter": false,
-  "search": "컨텍스트",
+  "search": "물리 스레드",
   "showTags": false,
   "showAttachments": false,
   "hideUnresolved": false,
@@ -39,6 +39,6 @@
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 0.5575886214644876,
+  "scale": 1.0959716859088937,
   "close": false
 }
