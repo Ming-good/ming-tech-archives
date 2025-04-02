@@ -1,6 +1,6 @@
 {
   "collapse-filter": false,
-  "search": "단편화",
+  "search": "3 way",
   "showTags": false,
   "showAttachments": false,
   "hideUnresolved": false,
@@ -39,6 +39,6 @@
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 1.0959716859088937,
-  "close": true
+  "scale": 2.154193773106765,
+  "close": false
 }
