@@ -3,7 +3,7 @@
 - 세션이 유지되는 서버가 다운될 경우 세션도 함께 사라지는 단점이 있음.
 - **스티키 세션의 핵심은 로드밸런서에서 어떻게 요청을 고정하느냐**에 달려 있음 
 	-  L4 스위치 방식 : 해시테이블 방식을 통한 요청 고정(IP와 포트기준)
-	-  mod_jk 방식 : jvmRoute설정을 통한  요청 고정
+	-  mod_jk 방식 : jvmRoute설정을 통한  요청 고정(JSESSIONID쿠키 route)
 - 관련 [[Session Manager]]
 	1. StandardManager : 기본 메모리 기반 세션 저장(스티키 세션에서 가장 일반적)
 	2. PersistentManager : 세션을 디스크에 저장(스티키 기반 + 재시작 유지 목적)
@@ -14,7 +14,7 @@
 - 관련 [[Session Manager]]
 	1. DeltaManager : 세션 전체를 모든 노드에 복제(기본 클러스터 매니저)
 	2. BackupManager : 일부 백업 노드에만 복제 (더 가볍고 효율적)
-
+- WEB.xml에 **<distributable/>** 추가
 ## 세션 저장 위치
 1. 기본 세션 저장 위치는 WAS 서버 메모리에 저장한다.
 ![[Pasted image 20250412185731.png]]
