@@ -1,4 +1,4 @@
-```
+```java
 package thread.control.print;  
   
 import static thread.util.MyLogger.log;  

@@ -5,7 +5,7 @@
 ---
 
 ### volatile 사용 예시
-```
+```java
 static class MyTask implements Runnable {  
 	// boolean runFlag = true;  
 	volatile boolean runFlag = true;  
