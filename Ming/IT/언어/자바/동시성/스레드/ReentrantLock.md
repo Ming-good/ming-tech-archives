@@ -64,4 +64,5 @@ public class ReentrantLockEx {
 ![[Pasted image 20250501220055.png]]
 
 ![[Pasted image 20250501220238.png]]
-
+> volatile` 를 사용하지 않아도 `Lock` 을 사용할 때 접근하는 변수의 메모리 가시성 문제는 해결된다. 
+> (이전에 학습한 [[자바 메모리 모델(JMM)]] 참고)
