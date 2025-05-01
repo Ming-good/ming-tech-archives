@@ -28,7 +28,7 @@ public interface Lock {
 ####  tryLock(long time, TimeUnit unit) :
 - 주어진 시간 동안 락 획득을 시도한다. 주어진 시간 안에 락을 획득하면 `true` 를 반환한다. 주어진 시간이 지나도 락을 획득하지 못한 경우 `false` 를 반환한다. 이 메서드는 대기 중 인터럽트가 발생하면 InterruptedException 이 발생하며 락 획득을 포기한다.
 - 대기 시간 동안 **TIMED_WAITING** 상태가 된다
-- 내부적으로는 `LockSupport.parkNanos(시간)` 이 호출된다.
+- 내부적으로는 **`LockSupport.parkNanos(시간)`** 이 호출된다.
 
 ---
 ## 공정성 :
