@@ -10,3 +10,26 @@
 > - 어떤 스레드가 락을 획득하는 순서는 보장되지 않는다
 > - volatile을 사용하지 않아도 synchronized 안에서 접근하는 변수의 메모리 가시성은 해결 된다.
 
+---
+
+### 필요한 영역만 락을 획득하는 방법 (자바)
+```java
+@Override
+synchronized (this) {
+	log("[검증 시작] 출금액: " + amount + ", 잔액: " + balance);
+	if (balance < amount) {
+		log("[검증 실패] 출금액: " + amount + ", 잔액: " + balance);
+		return false;
+	}
+	log("[검증 완료] 출금액: " + amount + ", 잔액: " + balance);
+	sleep(1000);
+	balance = balance - amount;
+	log("[출금 완료] 출금액: " + amount + ", 변경 잔액: " + balance);
+}
+
+```
+
+---
+
+![[Pasted image 20250501173938.png]]
+> 지역 변수는 개별 스레드 스택 영역에서 생성되기 때문에 동기화는 필요없다.
