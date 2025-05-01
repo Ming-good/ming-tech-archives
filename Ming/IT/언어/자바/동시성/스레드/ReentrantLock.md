@@ -23,14 +23,12 @@ public interface Lock {
 #### lock() : 
 - 락을 획득한다. 만약 다른 스레드가 이미 락을 획득했다면, **락이 풀릴 때까지 현재 스레드는 대기**(`WAITING` )한다. 이 메서드는 **인터럽트에 응답하지 않는다**.
 - 인터럽트가 발생하면 순간 대기 상태에서 빠져나오지만 lock() 메서드 안에서 **강제로 WAITING 상태로 변경**해버린다.
-
 #### tryLock() :
  - 락 획득을 시도하고, 즉시 성공 여부를 반환한다. 만약 다른 스레드가 이미 락을 획득했다면 `false` 를 반환하고 그렇지 않으면 락을 획득하고 `true` 를 반환한다. (**대기하지 않는다**)
-
 ####  tryLock(long time, TimeUnit unit) :
 - 주어진 시간 동안 락 획득을 시도한다. 주어진 시간 안에 락을 획득하면 `true` 를 반환한다. 주어진 시간이 지나도 락을 획득하지 못한 경우 `false` 를 반환한다. 이 메서드는 대기 중 인터럽트가 발생하면 InterruptedException 이 발생하며 락 획득을 포기한다.
 - 대기 시간 동안 **TIMED_WAITING** 상태가 된다
-- 내부적으로는 LockSupport.parkNanos(시간)이 호출된다.
+- 내부적으로는 `LockSupport.parkNanos(시간)` 이 호출된다.
 
 ---
 ## 공정성 :
@@ -73,6 +71,3 @@ public class ReentrantLockEx {
 ![[Pasted image 20250501220238.png]]
 > `volatile`를 사용하지 않아도 `Lock` 을 사용할 때 접근하는 변수의 메모리 가시성 문제는 해결된다. 
 > (이전에 학습한 [[자바 메모리 모델(JMM)]] 참고)
-
----
-
