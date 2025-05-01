@@ -1,3 +1,6 @@
+> WAITING, TIMED_WAITING 상태를 변경할 수 있고 인터럽틀를 받아서 깨울 수 있다. 
+> 이런 기능들을 잘 활용하면 synchronized의 단점인 **무한 대기 문제**를 해결 할 수 있다.
+
 ### park() : 스레드를 WAITING 상태로 전환한다.
 ```java
 public void run() {
