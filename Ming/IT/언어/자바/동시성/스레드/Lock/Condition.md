@@ -3,7 +3,7 @@ private final Condition producerCond = lock.newCondition();
 private final Condition consumerCond = lock.newCondition();
 ```
 
-****#### Condition
+#### Condition
 - `Condition` 은 `ReentrantLock` 을 사용하는 스레드가 대기하는 스레드 대기 공간이다.
 - `lock.newCondition()` 메서드를 호출하면 스레드 대기 공간이 만들어진다. `Lock(ReentrantLock)` 의 스레드 대기 공간은 이렇게 만들 수 있다.
 >참고로 `Object.wait()` 에서 사용한 스레드 대기 공간은 모든 객체 인스턴스가 내부에 기본으로 가지고 있다.
