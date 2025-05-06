@@ -1,3 +1,5 @@
+> 내부적으로 [[ReentrantLock]]와 [[Condition]] 객체를 이용하여 [[생산자와 소비자 문제]]를 해결한 객체
+
 ```java
 package java.util.concurrent;
 
