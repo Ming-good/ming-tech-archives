@@ -63,12 +63,6 @@ public class ArrayBlockingQueue {
 ```
 
 ---
-### 큐가 가득 찼을 때 생각할 수 있는 선택지
-- 예외를 던진다. 예외를 받아서 처리한다.
-- 대기하지 않는다. 즉시 `false` 를 반환한다.
-- 대기한다.
-- 특정 시간 만큼만 대기한다.
-
 ### BlockingQueue의 기능
 ![[Pasted image 20250506195758.png]]
 
