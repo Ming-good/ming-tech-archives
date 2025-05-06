@@ -5,7 +5,7 @@ package java.util.concurrent;
 
 public interface BlockingQueue<E> extends Queue<E> {
 
-	boolean add(E e);
+	boolean add(E e); // 큐가 가득찰 경우 IllegalStateException 발생
 	
 	boolean offer(E e);
 	
@@ -17,7 +17,7 @@ public interface BlockingQueue<E> extends Queue<E> {
 	
 	E poll(long timeout, TimeUnit unit) throws InterruptedException;
 	
-	boolean remove(Object o);
+	boolean remove(Object o); // 큐가 비어있을 경우 NoSuchElementException 발생
 	//...
 
 }
