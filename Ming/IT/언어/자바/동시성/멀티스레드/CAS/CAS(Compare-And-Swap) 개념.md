@@ -3,7 +3,7 @@
 >이 방법은 락을 사용하지 않기 때문에 **락 프리(lock-free) 기법**이라한다. 
 >참고로 CAS 연산은 락을 완전히 대체하는 것은 아니고, **작은 단위의 일부 영역에 적용**할 수 있다. 기본은 락을 사용하고, 특별한 경우에 CAS를 적용할 수 있다고 생각하면 된다.
 
-### compareAndSet(0, 1)
+### compareAndSet(0, 1) : 낙관적 접근법
 `AtomicInteger` 가 가지고 있는 값이 현재 0이면 이 값을 1로 변경하라는 매우 단순한 메서드이다.
 - 만약 `atomicInteger` 의 값이 현재 0이라면 `atomicInteger` 의 값은 1로 변경된다. 이 경우 `true` 를 반환한다.
 - 만약 `atomicInteger` 의 값이 현재 0이 아니라면 `atomicInteger` 의 값은 변경되지 않는다. 이 경우`false` 를 반환한다.
