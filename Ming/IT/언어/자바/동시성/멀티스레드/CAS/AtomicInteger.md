@@ -5,8 +5,8 @@
 
 ```java
 private static int incrementAndGet(AtomicInteger atomicInteger) {
+
 	int getValue;
-	
 	boolean result;
 	
 	do {
