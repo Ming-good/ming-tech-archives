@@ -1,4 +1,6 @@
-> 자바 1.5부터 지원
+> 자바 1.5부터 동시성에 대한 많은 혁신이 이루어졌다. 그 중에 동시성을 위한 컬렉션도 있다. 
+> 여기서 말하는 동시성 컬렉션은 스레드 안전한 컬렉션을 뜻한다.
+> `java.util.concurrent` 패키지에는 고성능 멀티스레드 환경을 지원하는 다양한 동시성 컬렉션 클래스들을 제공한다
 
 ### 동시성 컬렉션의 종류
 ##### `List`
@@ -9,10 +11,8 @@
 ##### `Map`
 - `ConcurrentHashMap` : `HashMap` 의 대안
 - `ConcurrentSkipListMap` : `TreeMap` 의 대안(정렬된 순서 유지, `Comparator` 사용 가능)
-
 ##### `Queue`
 - `ConcurrentLinkedQueue` : 동시성 큐, 비 차단(non-blocking) 큐이다.
-
 ##### `Deque`
 - `ConcurrentLinkedDeque` : 동시성 데크, 비 차단(non-blocking) 큐이다.
 
