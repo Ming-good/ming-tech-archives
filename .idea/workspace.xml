@@ -82,6 +82,9 @@
       <workItem from="1745471273682" duration="19000" />
       <workItem from="1745573852931" duration="751000" />
       <workItem from="1745714961272" duration="2286000" />
+      <workItem from="1746683788243" duration="242000" />
+      <workItem from="1747013229856" duration="33000" />
+      <workItem from="1747127581548" duration="27000" />
     </task>
     <task id="LOCAL-00001" summary="a">
       <option name="closed" value="true" />
@@ -133,11 +136,38 @@
     </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
