@@ -52,19 +52,16 @@ Future<Integer> future = es.submit(new MyCallable());
 - **반환값** : 작업이 성공적으로 취소된 경우true, 이미 완료되었거나 취소할 수 없는 경우 false
 - **설명** : 작업이 실행 중이 아니거나 아직 시작되지 않았으면 취소하고, 실행 중인 작업의 경우 mayInterruptIfRunning이 true이면 중단한다.
 - **참고** : 취소 상태의 Future에 Future.get()을 호출하면 CancellationException런타임 예외가 발생한다.
-
 ##### boolean isCancelled()
 - **기능** : 작업이 취소되었는지 여부를 확인한다.
 - **반환값** : 작업이 취소된 경우 `true` , 그렇지 않은 경우 `false`
 - **설명**: 이 메서드는 작업이 `cancel()` 메서드에 의해 취소된 경우에 `true` 를 반환한다.
-
 ##### boolean isDone()
 - **기능** : 작업이 완료되었는지 여부를 확인한다.
 - **반환값** : 작업이 완료된 경우 `true` , 그렇지 않은 경우 `false`
 - **설명** : 작업이 정상적으로 완료되었거나, 취소되었거나, 예외가 발생하여 종료된 경우에 `true` 를 반환한다.
-
 ##### State state()
-- **기능** : `Future` 의 상태를 반환한다. 자바 19부터 지원한다.
+- **기능** : `Future` 의 상태를 반환한다. **자바19**부터 지원한다.
 	- `RUNNING` : 작업 실행 중
 	- `SUCCESS` : 성공 완료
 	- `FAILED` : 실패 완료
@@ -77,7 +74,6 @@ Future<Integer> future = es.submit(new MyCallable());
 	- `InterruptedException` : 대기 중에 현재 스레드가 인터럽트된 경우 발생
 	- `ExecutionException` : 작업 계산 중에 예외가 발생한 경우 발생
 - **설명**: 작업이 완료될 때까지 `get()` 을 호출한 현재 스레드를 대기(블록킹)한다. 작업이 완료되면 결과를 반환한다.
-
 ##### V get(long timeout, TimeUnit unit)
 - **기능** : `get()` 과 같은데, 시간 초과되면 예외를 발생시킨다.
 - **매개변수** :
