@@ -66,7 +66,6 @@ Future<Integer> future = es.submit(new MyCallable());
 	- `SUCCESS` : 성공 완료
 	- `FAILED` : 실패 완료
 	- `CANCELLED` : 취소 완료
-
 ##### V get()
 - **기능** : 작업이 완료될 때까지 대기하고, 완료되면 결과를 반환한다.
 - **반환값** : 작업의 결과
