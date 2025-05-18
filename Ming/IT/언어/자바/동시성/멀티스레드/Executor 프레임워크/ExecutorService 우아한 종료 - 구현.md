@@ -1,6 +1,9 @@
 ```java
 private static void shutdownAndAwaitTermination(ExecutorService es) {  
-		es.shutdown(); // non-blocking, 새로울 작업을 받지 않는다. 처리중이거나, 큐에 이미 대기중인 작업은 처리한다. 이후 풀의 스레드를 처리한다.  
+		// non-blocking, 새로울 작업을 받지 않는다. 
+		// 처리중이거나, 큐에 이미 대기중인 작업은 처리한다. 이후 풀의 스레드를 처리한다.  
+		es.shutdown();
+		
 		try {  
 		// 이미 대기중인 작업들을 모두 완료할 때 까지 10초 대기  
 		if (!es.awaitTermination(10, TimeUnit.SECONDS)) {  
