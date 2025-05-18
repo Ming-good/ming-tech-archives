@@ -22,7 +22,7 @@ private static void shutdownAndAwaitTermination(ExecutorService es) {
 	}  
 }
 ```
-##### 서비스 종료 실패 (shutdownNow호출후 10초 기다리는 이유)
+##### 서비스 종료 실패 (shutdownNow호출 후 10초 기다리는 이유)
 - shutdownNow()가 작업 중인 스레드에 인터럽트를 호출하는 것은 맞다. 인터럽트 이후 자원 정리하는 간단한 작업을 수행 할 수 도 있어서 기다려주는 것.
 
 ##### 인터럽트 받을 수 없는 코드
