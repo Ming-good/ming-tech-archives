@@ -3,7 +3,7 @@ Future<Integer> future = es.submit(new MyCallable());
 ```
 
 - Callable.call()를 통한 결과를 즉시 받는 것은 불가능하다. 따라서 결과를 나중에 받을 수 있는 Future 객체를 제공한다.
-
+> Future객체는 **미래 결과에 대한 핸들**이다.
 ---
 ### 작동 흐름
 ![[Pasted image 20250515192221.png]]
