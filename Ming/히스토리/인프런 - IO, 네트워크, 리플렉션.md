@@ -7,3 +7,7 @@
 	- 유니코드의 등장
 	- UTF-16 : 다국어 표현 가능. ASCII와 호환 안 됨(2byte 고정)
 	- UTF-8 : 다국어 표현 가능. ASCII와 호환 가능. 가변문자코딩
+- [[Charset]]의 메서드
+	- forName(obj)
+	- StandardCharsets
+	- defaultCharset()
