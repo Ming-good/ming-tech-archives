@@ -11,3 +11,16 @@
 ### Charset.defaultCharset()
 - 현재 시스템에서 사용하는 기본 문자 집합을 반환
 > 인코딩 지정없이 사용가능한 경우는 보통 defaultCharset의 기본 문자 집합을 사용한다.
+
+---
+### 실행 결과
+```java
+private static void encoding(String text, Charset charset) {
+	byte[] bytes = text.getBytes(charset);
+	System.out.printf("%s -> [%s] 인코딩 -> %s %sbyte\n", text, charset, Arrays.toString(bytes), bytes.length);
+}
+```
+
+![[Pasted image 20250522235749.png]]
+>  문자를 byte로 변경하려면 문자 집합이 필요하다. 또한 문자 집합을 지정하지 않으면 현재 시스템에서 사용하는 기본 문자 집합을 인코딩에서 사용한다.
+
