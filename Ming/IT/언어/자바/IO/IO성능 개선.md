@@ -71,3 +71,37 @@ bos.close(); // 내부에 flush() 동작
 ![[Pasted image 20250525221430.png]]
 
 ---
+
+##### BufferedInputStream(InputStream)
+![[Pasted image 20250525221922.png]]
+##### 실행 과정
+![[Pasted image 20250525222340.png]]
+> BufferedInputStream은 버퍼의 크기만큼 데이터를 미리 읽어서 버퍼에 보관한다. 따라서 read()를 통해 1byte씩 데이터를 조회해도, 성능이 최적화 된다.
+
+---
+##### 버퍼를 직접 다루는 것 보다 BufferedXxx성능이 떨어지는 이유
+- 예제1 쓰기: 14000ms (14초)
+- 예제2 쓰기: 14ms (버퍼 직접 다룸)
+- 예제3 쓰기: 102ms (BufferedXxx)
+```java
+// BufferedOutpuStream 내부 로직
+@Override
+public void write(int b) throws IOException {
+	if (lock != null) {
+		lock.lock();
+		try {
+			implWrite(b);
+		} finally {
+			lock.unlock();
+		}
+	} else {
+		synchronized (this) {
+			implWrite(b);
+		}
+	}
+}
+```
+##### BufferedXxx클래스의 특징
+- BufferedXxx는 자바 초창기 만들어진 클래스로, 처음부터 멀티 스레드를 고려해서 만든 클래스이다. 따라서 싱글 스레드 상황에서는 동기화 락이 필요하지 않기 때문에 직접 버퍼를 다룰 때와 비교해서 성능이 떨어진다.
+- 일반적인 상황이라면 이 정도의 성능은 크게 문제가 되지 않음으로 BufferedXxx를 사용해도 충분하다.
+- 만약에 성능이 중요한 상황이라면 직접 만든 코드를 사용하면 된다.
