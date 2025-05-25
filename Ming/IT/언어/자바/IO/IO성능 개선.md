@@ -105,3 +105,24 @@ public void write(int b) throws IOException {
 - BufferedXxx는 자바 초창기 만들어진 클래스로, 처음부터 멀티 스레드를 고려해서 만든 클래스이다. 따라서 싱글 스레드 상황에서는 동기화 락이 필요하지 않기 때문에 직접 버퍼를 다룰 때와 비교해서 성능이 떨어진다.
 - 일반적인 상황이라면 이 정도의 성능은 크게 문제가 되지 않음으로 BufferedXxx를 사용해도 충분하다.
 - 만약에 성능이 중요한 상황이라면 직접 만든 코드를 사용하면 된다.
+
+---
+
+##### 한 번에 쓰기/읽기
+- 파일의 크기가 크지 않다면 간단하게 한 번에 쓰고 읽는 것도 좋은 방법이다.
+- 성능은 가장 빠르지만, 결과적으로 메모리를 한 번에 많이 사용하기 때문에 파일의 크기가 작아야 한다.
+```java
+FileOutputStream fos = new FileOutputStream(FILE_NAME);
+byte[] buffer = new byte[FILE_SIZE];
+for (int i = 0; i < FILE_SIZE; i++) {
+	buffer[i] = 1;
+}
+fos.write(buffer);
+```
+- 디스크나 파일 시스템에서 데이터를 읽고 쓰는 기본 단위가 보통 4KB 또는 8KB이기 때문에, 한 번에 쓴다고해서 무작정 빠른 것은 아니다.
+
+```java
+FileInputStream fis = new FileInputStream(FILE_NAME);
+byte[] bytes = fis.readAllBytes();
+```
+- `readAllBytes()` 는 자바 구현에 따라 다르지만 보통 4KB, 8KB, 16KB 단위로 데이터를 읽어들인다.
