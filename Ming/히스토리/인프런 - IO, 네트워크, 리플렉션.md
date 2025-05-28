@@ -4,6 +4,11 @@
 	- byte를 다루는 클래스와 문자를 다루는 클래스 UML
 	- `OutputStreamWriter` 마저 간소화한  `FileWriter`
 	- `Writer`, `Reader` 클래스의 Buffer 클래스 사용법
+2. 기타 스트림들
+	- [[PrintStream(fos) - 콘솔 출력하듯]]
+	- [[DataOutputStream(fos)]] : 데이터 형식 그대로 저장
+	- ![[Pasted image 20250528222133.png]]
+
 ### 2025.05.25
 - 예제2) [[Charset]] 별 인코딩, 디코딩시 호환 여부
 - FileInputStream과 FileOutputStream 사용법 : [[파일 입출력]]
