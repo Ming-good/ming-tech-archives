@@ -1,3 +1,9 @@
+### 2025.05.28
+1. 문자를 다루는 I/O클래스 : [[스트림을 문자로]]
+	- 문자 -> byte[] 전환해주는 `OutputStreamWriter`
+	- byte를 다루는 클래스와 문자를 다루는 클래스 UML
+	- `OutputStreamWriter` 마저 간소화한  `FileWriter`
+	- `Writer`, `Reader` 클래스의 Buffer 클래스 사용법
 ### 2025.05.25
 - 예제2) [[Charset]] 별 인코딩, 디코딩시 호환 여부
 - FileInputStream과 FileOutputStream 사용법 : [[파일 입출력]]
