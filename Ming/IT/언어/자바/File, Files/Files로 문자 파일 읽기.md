@@ -15,7 +15,8 @@ for (int i = 0; i < lines.size(); i++) {
 System.out.println((i+1) + " : " + lines.get(i));  
 }  
 ```
-> 내부에 버퍼 처리 다 되어 있다.
+###### `Files.writeString(path, writeString, StandardCharsets.UTF_8)`
+-  내부에 버퍼 처리 다 되어 있다.
 
 ###### `Files.readAllLines(path)`
 - 파일을 한 번에 다 읽고, 라인 단위로 `List` 에 나누어 저장하고 반환한다.
