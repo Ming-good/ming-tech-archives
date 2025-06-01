@@ -17,6 +17,7 @@
 		- 성능 최적화가 매우 중요하다면 Protobuf, Avro 같은 기술을 고려하자. (대부분 JSON만 사용해도 충분하다)
 5. File, Files
 	- File기능 정리 : [[File 기능]]
+	- 
 ### 2025.05.28
 1. 문자를 다루는 I/O클래스 : [[스트림을 문자로]]
 	- 문자 -> byte[] 전환해주는 `OutputStreamWriter`
