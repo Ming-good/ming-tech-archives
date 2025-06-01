@@ -1,5 +1,12 @@
 ### 2025.05.31
-1. DataStream 문자를 읽어오는 방식 : [[DataOutputStream(fos)]]
+1.  [[DataOutputStream(fos)]]
+	- DataStream 문자를 읽어오는 방식
+	- DataStream의 장점 : 최적화
+2. 객체를 한 번에 파일로 저장하는 방법 : [[직렬화]]
+	- `Serializable` :  마커 인터페이스
+	- ObjectOutputStream() 사용법
+3. [[List]].of(obj) : 불변 객체
+4. XML, JSON, 데이터베이스
 ### 2025.05.28
 1. 문자를 다루는 I/O클래스 : [[스트림을 문자로]]
 	- 문자 -> byte[] 전환해주는 `OutputStreamWriter`
