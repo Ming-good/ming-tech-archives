@@ -16,8 +16,11 @@
 		- JSON이 사실상 표준이다. JSON을 먼저 고려하자.
 		- 성능 최적화가 매우 중요하다면 Protobuf, Avro 같은 기술을 고려하자. (대부분 JSON만 사용해도 충분하다)
 5. File, Files
-	- File기능 정리 : [[File 기능]]
-	- Files 특징, 기능 : [[Files]]
+	- File 기능 정리 : [[File 기능]]
+	- Files 특징, 기능 : [[Files 기능]]
+	- File과 Files 경로 다루기 : [[경로]]
+	- [[Files로 문자 파일 읽기]]
+	- 
 ### 2025.05.28
 1. 문자를 다루는 I/O클래스 : [[스트림을 문자로]]
 	- 문자 -> byte[] 전환해주는 `OutputStreamWriter`
