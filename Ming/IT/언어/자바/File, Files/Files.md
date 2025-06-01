@@ -58,8 +58,6 @@ System.out.println("===== Attributes =====");
 System.out.println("Creation time: " + attrs.creationTime());
 System.out.println("Is directory: " + attrs.isDirectory());
 System.out.println("Is regular file: " + attrs.isRegularFile());
-
 System.out.println("Is symbolic link: " + attrs.isSymbolicLink());
-
 System.out.println("Size: " + attrs.size());
 ```
