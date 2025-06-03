@@ -5,6 +5,9 @@
 	- [[TCP]]
 		- TCP/IP패킷 정보
 		- IP의 한계를 해결한 TCP특징
+	- [[UDP(사용자 데이터그램 프로토콜)]]
+	- [[PORT]]
+	- 
 ### 2025.05.31
 1.  [[DataOutputStream(fos)]]
 	- DataStream 문자를 읽어오는 방식
