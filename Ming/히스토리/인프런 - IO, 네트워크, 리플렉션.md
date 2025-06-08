@@ -89,5 +89,14 @@
 		- try-finally를 사용했을 때 자원 정리 문제점
 		- try-with-resources의 장점
 		- 부가예외
+		- 서버 강제 종료시 try-finally 사용 이유
 ### 2025.06.08
-1. [[]]
+1. [[셧다운 훅(Shutdown Hook)]]
+	- 정상종료란?
+	- 강제종료란?
+	- 구현방법
+	- 셧다운 훅으로 자원 정리시 `sleep(1000)`하는 이유
+2. [[네트워크 예외]]
+	- UnknownHostException : 연결 자체 안 됨.
+	- ConnectException : 해당IP로 접속까지는 성공, 포트에서 TCP 연결 실패, 방화벽 문제
+	- **타임아웃**
