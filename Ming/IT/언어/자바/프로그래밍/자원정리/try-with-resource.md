@@ -1,6 +1,8 @@
 ### 구현 방법
 > try-with-resource를 이용하기 위해서는 `AutoCloseable`을 구현해야 한다.
 > jdk1.7 부터 이용 가능하다.
+
+- try-with-resources는 사용과 해제를 함께 묶어서 처리할 때 사용한다.
 ```java
 public class ResourceV2 implements AutoCloseable{  
 	private String name;  
@@ -41,3 +43,9 @@ public class ResourceV2 implements AutoCloseable{
 	- 개발자는 자원 정리 중에 발생한 부가 예외를 `e.getSuppressed()`를 통해 활용 할 수 있다.
 	- try-with-resources를 사용하면 핵심 예외를 반환하면서, 동시에 부가 예외도 필요하면 확인할 수 있다.
 	- 자바는 e.addSuppressed(ex)라는 메서드가 있어서 예외 안에 참고할 예외를 담아둘 수 있다. 이 기능은 try-with-resources와 함께 등장했다.
+
+### 서버 강제 종료시 try-finally 사용 이유
+- 서버 강제 종료시에 try-with-resources를 사용하고 interrupt으로 종료처리하면 생기는 문제
+1.  인터럽트는 신호이다. 따라서 CPU가 처리될 때만 인터럽 신호를 처리할 수 있다.
+2. I/O 블로킹 중인 스레드는 커널 대기 상태라서 CPU에서 자바 코드가 실행되지 않으므로 인터럽트 flag에 반응할 수 없다.
+3. socket.close()로 강제 unblock 처리가 필요하다.
