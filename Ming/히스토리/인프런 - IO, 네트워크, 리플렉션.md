@@ -99,4 +99,5 @@
 2. [[네트워크 예외]]
 	- UnknownHostException : 연결 자체 안 됨.
 	- ConnectException : 해당IP로 접속까지는 성공, 포트에서 TCP 연결 실패, 방화벽 문제
-	- **타임아웃**
+	- TCP 연결 타임아웃
+	- TCP 소켓 연결 타임아웃
