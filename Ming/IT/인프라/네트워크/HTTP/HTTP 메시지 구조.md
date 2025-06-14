@@ -1,0 +1,55 @@
+![[Pasted image 20250614223910.png]]
+
+
+### 구조
+![[Pasted image 20250614224150.png]]
+
+## 시작라인
+#### 요청 메시지
+```http
+GET /search?q=hello&hi=ko HTTP/1.1
+Host: www.google.com
+```
+
+**HTTP 메서드**  
+- 종류 : GET, POST, PUT,DELETE 등등
+- 서버가 수행해야 할 동작 지정
+	- GET : 리소스 조회
+	- POST : 요청 내역 처리(게시물 등록, 계좌 이체)
+ **요청 대상(경로)** 
+- 절대경로?쿼리
+- 절대경로 : "/"로 시작하는 경로
+- 쿼리 : key1=value1&key2=value2 형식으로 데이터 전달
+ **HTTP 버전**
+ - HTTP Version
+
+#### 응답 메시지
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html;charset=UTF-8
+Content-Length: 3423
+
+<html>
+	<body>...</body>
+</html>
+```
+- HTTP버전
+- HTTP 상태 코드 : 요청성공, 실패를 나타냄
+	- 200 : 성공
+	- 400 : 클라이언트 요청 오류
+	- 404 : 요청 리소스 없음
+	- 500 : 서버 내부 오류
+- 이유 문구 : 사람이 이해할 수 있는 짧은 상태 코드 설명 글
+
+
+## HTTP 헤더(용도)
+- HTTP 전송에 필요한 모든 부가정보
+- name: value(필드 이름은 대소문자 구문 없음)
+- 예) 메시지 바디 내용, 바디크기, 압축, 인증, 요청 클라이언트 정보, 서버 애플리케이션 정보, 캐시관리정보
+- 사용자 정의 헤더 추가 가능
+![[Pasted image 20250614225656.png]]![[Pasted image 20250614225706.png]]
+
+## HTTP 메시지 바디
+- 실제 전송할 데이터
+- HTML 문서, 이미지, 영상, JSON 등등 byte로 표현할 수 있는 모든 데이터 전송 가능
+- ![[Pasted image 20250614225757.png]]
