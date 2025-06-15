@@ -8,8 +8,8 @@ Search
 ```
 
 ## URL은 ASCII를 사용한다.
-- HTTP 메시지에서 시작 라인(URL을 포함)과 HTTP헤더의 이름은 항상 ASCII를 사용해야한다.
-- HTTP 메시지 바디는 UTF-8과 같은 다른 인코딩을 사용할 수 있다.
+- HTTP 메시지에서 **시작 라인(URL을 포함)과 HTTP헤더**의 이름은 항상 ASCII를 사용해야한다.
+- HTTP **메시지 바디**는 UTF-8과 같은 다른 인코딩을 사용할 수 있다.
 
 ## HTTP에서 URL이 ASCII 문자를 사용하는 이유
 - 인터넷이 처음 설계되던 시기(1980~1990년대)에, 대부분의 컴퓨터 시스템은 ASCII 문자 집합을 사용했다.
@@ -37,3 +37,7 @@ System.out.println("encode = " + encode);
 String decode = URLDecoder.decode(encode, UTF_8);
 System.out.println("decode = " + decode);
 ```
+
+#### 정리
+- `%` 인코딩은 데이터 크기에서 보면 효율이 떨어진다. 문자 "가"는 단지 3byte만 필요하다. 그런데 % 인코딩을 사용하면 `%EA%B0%80` 무려 9byte가 사용된다.
+- HTTP는 매우 보수적이다. 호환성을 최우선에 둔다.
