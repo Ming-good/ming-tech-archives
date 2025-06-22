@@ -8,7 +8,7 @@ Search
 ```
 
 ## URL은 ASCII를 사용한다.
-- HTTP 메시지에서 **시작 라인(URL을 포함)과 HTTP헤더**의 이름은 항상 ASCII를 사용해야한다.
+- HTTP 메시지에 서 **시작 라인(URL을 포함)과 HTTP헤더**의 이름은 항상 ASCII를 사용해야한다.
 - HTTP **메시지 바디**는 UTF-8과 같은 다른 인코딩을 사용할 수 있다.
 
 ## HTTP에서 URL이 ASCII 문자를 사용하는 이유
