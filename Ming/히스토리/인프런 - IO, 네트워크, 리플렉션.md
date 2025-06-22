@@ -159,3 +159,5 @@
 	- @Override : 메서드 재정의가 잘 되었는지
 	- @Deprecated : 사용하지 말 것을 경고
 	- @SuppressWarnings : 다 알고있으니 경고 무시
+2. [[리플렉션 동적 바인딩]]
+	- `method.invoke(obj, args[])`
