@@ -11,7 +11,7 @@
 	- forName(obj)
 	- StandardCharsets
 	- defaultCharset()
- 3. 예제1) [[Charset]] 별 실제 바이트가 어떻게 나오는지 확인
+3. 예제1) [[Charset]] 별 실제 바이트가 어떻게 나오는지 확인
 4. 예제2) [[Charset]] 별 인코딩, 디코딩시 호환 여부
 ## I/O 기본 스트림
 1. FileInputStream과 FileOutputStream 사용법 : [[파일 입출력]]
