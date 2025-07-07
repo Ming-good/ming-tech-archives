@@ -13,7 +13,7 @@ System.out.println("3. Stream.of()");
 Stream<String> stream2 = Stream.of("a", "b", "c");  
 stream2.forEach(System.out::println);  
   
-System.out.println("4. 무한 스트림 생성 - iterate()"); //Function
+System.out.println("4. 무한 스트림 생성 - iterate()");
 Stream<Integer> infiniteStream = Stream.iterate(0, n -> n + 2);  
 infiniteStream.limit(3).forEach(System.out::println);  
   
