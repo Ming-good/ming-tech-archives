@@ -37,6 +37,7 @@
 	- `get()` 보다는 `orElse()` , `orElseGet()` , `orElseThrow()` 등의 메서드를 활용하면 좀 더 세련되고 안전하게 값을 처리할 수 있다.
 
 ---
+## Optional 값 획득 사용 예시
 ```java
 // 예제: 문자열 "Hello"가 있는 Optional과 비어있는 Optional 준비  
 Optional<String> optValue = Optional.of("Hello");  
