@@ -35,3 +35,88 @@
 - `get()` 메서드는 `Optional` 사용 시 가능하면 피해야 한다.
 	- 값이 없는 상태(`Optional.empty()` )에서 `get()` 을 호출하면 바로 예외가 터지므로, 안전하게 사용하려면 `isPresent()` 같은 사전 체크가 필요하다.
 	- `get()` 보다는 `orElse()` , `orElseGet()` , `orElseThrow()` 등의 메서드를 활용하면 좀 더 세련되고 안전하게 값을 처리할 수 있다.
+
+---
+```java
+// 예제: 문자열 "Hello"가 있는 Optional과 비어있는 Optional 준비  
+Optional<String> optValue = Optional.of("Hello");  
+Optional<String> optEmpty = Optional.empty();  
+  
+// isPresent(): 값이 있으면 true  
+System.out.println("=== 1. isPresent() / isEmpty() ===");  
+System.out.println("optValue.isPresent() = " + optValue.isPresent());  
+System.out.println("optValue.isPresent() = " + optEmpty.isPresent());  
+System.out.println("optValue.isEmpty() = " + optEmpty.isEmpty());  
+  
+// get():직접 내부의 값을 꺼냄, 값이 없으면 예외 NoSuchElementException 발생  
+System.out.println("=== 2. get() ===");  
+String getValue = optValue.get();  
+System.out.println("getValue = " + getValue);  
+// String o = optEmpty.get(); // 예외 발생  
+  
+// 값이 있으면 그 값, 없으면 지정된 기본값 사용  
+System.out.println("=== 3. orElse() ===");  
+String value1 = optValue.orElse("기본값");  
+String empty1 = optEmpty.orElse("기본값");  
+System.out.println("value1 = " + value1);  
+System.out.println("empty1 = " + empty1);  
+  
+// 값이 없을 때만 람다(Supplier)가 실행되어 기본값 생성  
+System.out.println("=== 4. orElseGet() ===");  
+String value2 = optValue.orElseGet(() -> {  
+	System.out.println("람다 호출 - optValue");  
+	return "new Value";  
+});  
+String empty2 = optEmpty.orElseGet(() -> {  
+	System.out.println("람다 호출 - optEmpty");  
+	return "new Value";  
+});  
+System.out.println("value2 = " + value2);  
+System.out.println("empty2 = " + empty2);  
+  
+// 값이 있으면 반환, 없으면 예외 발생  
+System.out.println("=== 5. orElseThrow() ===");  
+String value3 = optValue.orElseThrow(() -> new RuntimeException("값이 없습니다"));  
+System.out.println("value3 = " + value3);  
+  
+try {  
+	String empty3 = optEmpty.orElseThrow(() -> new RuntimeException("값이 없습니다"));  
+} catch (RuntimeException e) {  
+	System.out.println("에외 발생 : " + e.getMessage());  
+}  
+  
+// Optional을 반환  
+System.out.println("=== 6. or() ===");  
+Optional<String> result1 = optValue.or(() -> Optional.of("Fallback"));  
+System.out.println(result1);  
+  
+Optional<String> result2 = optEmpty.or(() -> Optional.of("Fallback"));  
+System.out.println(result2);
+```
+
+```console
+=== 1. isPresent() / isEmpty() ===
+optValue.isPresent() = true
+optValue.isPresent() = false
+optValue.isEmpty() = true
+
+=== 2. get() ===
+getValue = Hello
+
+=== 3. orElse() ===
+value1 = Hello
+empty1 = 기본값
+
+=== 4. orElseGet() ===
+람다 호출 - optEmpty
+value2 = Hello
+empty2 = new Value
+
+=== 5. orElseThrow() ===
+value3 = Hello
+에외 발생 : 값이 없습니다
+
+=== 6. or() ===
+Optional[Hello]
+Optional[Fallback]
+```
