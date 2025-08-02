@@ -72,3 +72,8 @@ public static void main(String[] args) {
 	MyLogger.log("pool : " + pool);  
 }
 ```
+
+## 작업 훔치기
+- `RecursiveTask.pork()`는 실제로는 새로운 스레드에게 작업을 시키는 명령어가 아니다. 본인 스레드 큐에 작업을 넣어두면 남는 스레드가 작업을 아래부터 steal해가는 것이다.
+![[Pasted image 20250731225435.png]]
+![[Pasted image 20250731225445.png]]
