@@ -22,8 +22,8 @@ public class SumTask extends RecursiveTask<Integer> {
 		if (list.size() <= THRESHOLD) {  
 			MyLogger.log("[처리 시작] " + list);  
 			int sum = list.stream()  
-			.mapToInt(HeavyJob::heavyTask)  
-			.sum();  
+				.mapToInt(HeavyJob::heavyTask)  
+				.sum();  
 			MyLogger.log("[처리 완료] " + list + " -> sum: " + sum);  
 			return sum;  
 		} else {  
