@@ -1,5 +1,7 @@
 >자바 8에서는 공용 풀(Common Pool)이라는 개념이 도입되었는데, 이는 Fork/Join 작업을 위한 자바가 제공하는 기본 스레드 풀이다.
 
+- Fork/Join 공용 풀은 CPU 바운드 작업(계산 집약적인 작업)을 위해 설계되었다.
+
 ```java
 // 자바 8 이상에서는 공용 풀(common pool) 사용 가능
 ForkJoinPool commonPool = ForkJoinPool.commonPool();
