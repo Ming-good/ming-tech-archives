@@ -5,7 +5,6 @@
 
 ## 프로덕션 환경에서의 디버깅 설정
 ![[Pasted image 20250824192822.png]]
-
 ## `checkpoint()`를 사용한 디버깅
 ```java
 Flux.just(2, 4, 6, 8)  
@@ -17,3 +16,16 @@ Flux.just(2, 4, 6, 8)
 		err -> log.error("# onErr: {}", err)  
 	);
 ```
+
+## `log()`를 사용한 디버깅
+```java
+Flux.just(2, 4, 6, 8)  
+	.zipWith(Flux.just(1, 2, 3, 0), (x, y) -> x / y)  
+	.map(num -> num + 2)  
+	.log()  
+	.subscribe(  
+		data -> log.info("# onNext: {}", data),  
+		err -> log.error("# onErr: {}", err)  
+	);
+```
+- 추가한 지점의 리액터 시그널을 출력한다.
