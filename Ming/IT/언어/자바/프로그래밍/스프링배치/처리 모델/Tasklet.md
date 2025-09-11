@@ -21,6 +21,13 @@ public class ZombiewProcessCleanupTasklet implements Tasklet {
 ====
 
 @Bean  
+public Job zombieCleanupJob() {  
+return new JobBuilder("zombieCleanupJob", jobRepository)  
+		.start(step1Ex1())  
+		.build();  
+}
+
+@Bean  
 public Step step1Ex1() {  
 	return new StepBuilder("testJob", jobRepository)  
 			.tasklet(new ZombiewProcessCleanupTasklet(), transactionManager)  
