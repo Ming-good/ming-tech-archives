@@ -63,13 +63,27 @@ public Step terminationStep(JobRepository repository, PlatformTransactionManager
 @Bean  
 @StepScope  
 public Tasklet terminatorTasklet(  
+	//기본형, 날짜형, 열거형, POJO
 	@Value("#{jobParameters['terminatorId']}") String terminatorId,  
-	@Value("#{jobParameters['targetCount']}") Integer targetCount  
+	@Value("#{jobParameters['targetCount']}") Integer targetCount,  
+	@Value("#{jobParameters['executionDate']}") LocalDate executionDate,  
+	@Value("#{jobParameters['startTime']}") LocalDateTime startTime,  
+	@Value("#{jobParameters['quest']}") Quest quest,
+	SystemInfiltrationParameters infiltrationParameters
 ) {  
 	return (contribution, chunkContext) -> {  
-		log.info("시스템 종결자 정보:");  
-		log.info("ID: {}", terminatorId);  
-		log.info("제거 대상 수 {}", targetCount);  
+	log.info("시스템 종결자 정보:");  
+	log.info("ID: {}", terminatorId);  
+	log.info("제거 대상 수 {}", targetCount);  
+	
+	log.info("작전 개시일: {}", executionDate);  
+	log.info("작전 시작 시간: {}", startTime);  
+	
+	log.info("난이도: {}", quest);  
+	  
+	log.info("임무 코드네임: {}", infiltrationParameters.getMissionName());  
+	log.info("보안 레벨: {}", infiltrationParameters.getSecurityLevel());  
+	log.info("작전 지휘관: {}", infiltrationParameters.getOperationCommander());
 	  
 		for (int i = 1; i <= targetCount; i++) {  
 			log.info("프로세스 {} 종료 완료!", i);  
@@ -80,8 +94,46 @@ public Tasklet terminatorTasklet(
 	};
 }
 
+@Component  
+@StepScope  
+@Getter  
+public class SystemInfiltrationParameters {  
+	@Value("#{jobParameters[missionName]}")  
+	private String missionName;  
+	private int securityLevel;  
+	private final String operationCommander;  
+  
+	public SystemInfiltrationParameters(
+		@Value("#{jobParameters[operationCommander]}") String operationCommander
+	) {  
+		this.operationCommander = operationCommander;  
+	}  
+	  
+	@Value("#{jobParameters[securityLevel]}")  
+	public void setSecurityLevel(int securityLevel) {  
+		this.securityLevel = securityLevel;  
+	}  
+}  
+public enum Quest{EASY, NORMAL, HARD, EXTREME}
+
 /* 실행 명령어 */
-./gradlew bootRun --args='--spring.batch.job.name=processTerminatorJob terminatorId=KILL-9,java.lang.String targetCount=5,java.lang.Integer'
+./gradlew bootRun --args='--spring.batch.job.name=processTerminatorJob terminatorId=12 
+targetCount=10,java.lang.Integer 
+executionDate=2025-09-12,java.time.LocalDate 
+startTime=2025-09-12T22:10:00,java.time.LocalDateTime quest=HARD,com.system.batch.killbatchsystem.config.JobParameterConfig$Quest
+operationCommander=Ming9 
+securityLevel=3,java.lang.Integer 
+missionName=밍구주말보내기'
 ```
+> 잡 파라미터를 받으려면 `@StepScope`와 같은 특별한 애노테이션이 필요하다.
 
-
+## 프로그래밍 방식으로 생성 및 잡호출
+```java
+// 잡 파리미터 프로그래밍 방식으로 생성
+JobParameters jobParameters = new JobParametersBuilder()
+	.addJobParameter("inputFilePath", "/data/input/users.csv", String.class) 
+	.toJobParameters(); 
+	
+// 잡 파라미터 값 전달 및 잡 호출 
+jobLauncher.run(dataProcessingJob, jobParameters);
+```
