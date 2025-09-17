@@ -3,7 +3,6 @@
     - 풀 내부에서 `PreparedStatement`를 캐싱하지 않음.
     - 대신 **드라이버/DB 자체 캐싱**(JDBC4 `isValid`, 서버/클라이언트 캐시)을 활용.
     - → Apache Commons DBCP는 `poolPreparedStatements`, `maxOpenPreparedStatements` 같은 옵션으로 풀 차원의 캐싱 제공.
-        
 - **커넥션 테스트 쿼리 제거/축소**
     - `validationQuery` 대신 **JDBC 표준 `Connection.isValid()`**를 활용.
     - → Commons DBCP는 기본적으로 `SELECT 1` 같은 쿼리를 주기적으로 실행.
@@ -22,7 +21,7 @@
 - **개발자: Brett Wooldridge**
 - 기존 풀의 성능 병목(락 과다, 오브젝트 생성 과다 등)을 해결하기 위해 개발.
 - 모토: **“풀은 풀만 한다”**
-
+---
 ## 핵심 요약
 **HikariCP = 불필요 기능 제거 + 단순성 + 고성능 + 누수 감지**  
 → 현재 자바 진영에서 사실상 **표준 커넥션 풀**로 자리 잡음.
