@@ -12,8 +12,9 @@ public T mapLine(String line, int lineNumber) throws Exception {
     return fieldSetMapper.mapFieldSet(fieldSet);   
 }
 ```
+---
 
-## 토큰화
+## 토큰화(`LineTokenizer`)
 > `LineTokenizer`라는 컴포넌트를 활용하여 파일에서 읽은 한 줄의 텍스트를 개별 토큰으로 분리한다.
 >  이후 그 결과를 `FieldSet`객체로 만들어 반환한다.
 ![[Pasted image 20250920204624.png]]
@@ -22,8 +23,8 @@ public T mapLine(String line, int lineNumber) throws Exception {
 - `DelimitedLineTokenizer`: 쉼표와 같은 구분자로 구분된 데이터를 토큰화 한다.
 - `FixedLengthTokenizer`: 고정 길이로 구분된 데이터를 토큰화한다.
 
-## 객체 매핑
->`FieldSetMapper`의 `mapFieldSet()`메서드로 `FieldSet`객체를 입력 받아 객체를 매핑한다.
+## 객체 매핑(`FieldSetMapper`)
+>`FieldSetMapper`의 `mapFieldSet(FieldSet)`메서드로 객체를 매핑한다.
 
 ```java
 public interface FieldSetMapper<T> {
