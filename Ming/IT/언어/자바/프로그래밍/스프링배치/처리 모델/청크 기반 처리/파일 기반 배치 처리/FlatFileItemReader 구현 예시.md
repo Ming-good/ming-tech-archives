@@ -1,3 +1,4 @@
+## 구분자로 분리된 형식의 파일 읽기
 ```java
 @Bean  
 public Job readJob(Step readStep) {  
@@ -89,3 +90,28 @@ public static class CsvFileVo {
 - .targetType() : 변환 대상 객체(SystemFailure) 지정
 - .linesToSkip() : 헤더 라인 제거
 - .strict(): 엄격한 규율 적용
+
+
+## 고정길이 형식 파일 읽기
+```java
+@Bean  
+@StepScope  
+public FlatFileItemReader<CsvFileVo> csvLengReader(  
+	@Value("#{jobParameters['inputFile']}") String inputFile  
+){  
+return new FlatFileItemReaderBuilder<CsvFileVo>()  
+			.name("csvLengReader")  
+			.resource(new FileSystemResource(inputFile))  
+			.fixedLength()  
+			.columns(new Range[]{  
+			new Range(1, 8),  
+			new Range(9, 29),  
+			new Range(30, 39),  
+			new Range(40, 45),  
+			new Range(46, 68),  
+			})  
+			.names("errorId", "errorDateTime", "serverity", "processId", "errorMessage")  
+			.targetType(CsvFileVo.class)  
+			.build();  
+}
+```
