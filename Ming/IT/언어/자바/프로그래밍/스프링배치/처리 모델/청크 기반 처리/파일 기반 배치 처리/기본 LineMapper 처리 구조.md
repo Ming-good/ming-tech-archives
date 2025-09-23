@@ -1,7 +1,7 @@
 ## `LineMapper`의 구현체 `DefaultLineMapper`
 ## 핵심 기능
 - **토큰화**(`LineTokenizer`): 하나의 문자열 라인을 토큰단위로 분리한다.
-- 객체 매핑(`FieldSetMapper`): 분리된 토큰들을 도메인 객체의 프로퍼티에 매핑한다.
+- **객체 매핑**(`FieldSetMapper`): 분리된 토큰들을 도메인 객체의 프로퍼티에 매핑한다.
 
 ```java
 @Override
