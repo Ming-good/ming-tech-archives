@@ -6,6 +6,12 @@
 - `retryCallback`
 - `recoveryCallback`
 #### 재시도 심판관 - `RetryPolicy`
-#### 내결함성 최적화 - Input Chunk재활용
+
+#### 재시도 설정
 
 
+- `faultTolerant()`
+- `retry()`
+- `noRetry()`
+- `retryLimit()`
+- 
