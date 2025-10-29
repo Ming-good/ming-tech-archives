@@ -12,4 +12,4 @@
 - `retry()`
 - `noRetry()`
 - `retryLimit()`
-- 
+#### `ItemProcessor`트랜잭션 비처리
