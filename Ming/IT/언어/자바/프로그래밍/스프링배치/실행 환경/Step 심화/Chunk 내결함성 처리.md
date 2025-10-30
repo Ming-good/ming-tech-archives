@@ -1,12 +1,11 @@
-## Chunk처리의 구조적 한계
-#### 내결함성의 기능
+## 내결함성의 기능
 - 재시도
 - 건너뛰기
 >`ItemReader`는 재시도 기능의 보호 대상이 아니다. 
 >`ItemReader`에서 발생한 예외는 재시도되지 않는다.
 >왜냐하면 스프링 배치는 [[Mutable한 데이터소스]]를 고려했기 때문이다.
 ##  해결방법1, 재시도 - `RetryTemplate`
-`RetryTemplate`는 작업이 실패하면 정해진 정책에 따라 다시 시도하는 컴포넌트이다.
+- `RetryTemplate`는 작업이 실패하면 정해진 정책에 따라 다시 시도하는 컴포넌트이다.
 ![[Pasted image 20251030135646.png]]
 - **`canRetry()`**
 	- 재시도 가능 여부 판단
@@ -49,4 +48,29 @@ public Step terminationRetryStep() {
 	- 허용 가능한 총 시도 횟수를 지정
 		- (정확히는 재시도 횟수가 아닌, 허용가능한 retryCallback 호출 회수이다.)
 	- 실제 허용 가능 재시도 횟수 = `retryLimit - 1`
-#### `ItemProcessor`트랜잭션 비처리
+---
+
+## `ItemProcessor`트랜잭션 비처리
+-  `processorNonTransactional()`
+	- 해당 설정을 사용하면 스프링 배치는 `ItemProcessor`를 비트랜잭션 상태로 표시하여 한 번 처리된 아이템의 결과를 캐시에 저장한다.
+	- 여전히 청크 단위 트랜잭션 롤백된다.  
+	- 해당 기능을 활성화할 경우
+		- 성공적한 아이템는 `process()`호출시에 캐싱된 데이터를 돌려 받아 비용을 0에 가까이 소모한다.
+		- 실패한 아이템에 대해서만 `process()`로직이 수행된다.
+```java
+@Bean
+public Step terminationRetryStep() {
+    return new StepBuilder("terminationRetryStep", jobRepository)
+            .<Scream, Scream>chunk(3, transactionManager)
+            .reader(terminationRetryReader())
+            .processor(terminationRetryProcessor())
+            .writer(terminationRetryWriter())
+            .faultTolerant()
+            .retry(TerminationFailedException.class)
+            .retryLimit(3)
+            .listener(retryListener())
+            .processorNonTransactional() // ItemProcessor 비트랜잭션 처리
+            .build();
+}
+```
+
