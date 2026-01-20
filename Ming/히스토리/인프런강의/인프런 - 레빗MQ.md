@@ -9,3 +9,9 @@
 	- 랜아웃
 	- 토픽
 	- 헤더
+## AMQP 설정
+- [[핵심 컴포넌트]]
+	- `Queue`
+	- `RabbitTemplate`
+	- `SimpleMessageListenerContainer`
+	- `MessageListenerAdapter`
