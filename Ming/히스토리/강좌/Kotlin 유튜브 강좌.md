@@ -41,3 +41,6 @@
 - [[22_중첩클래스와 내부클래스]]
 	- 중첩 클래스
 	- 내부 클래스: `inner class()`
+- [[23_DATA와 ENUM]]
+	- `data class`
+	- `enum class`
