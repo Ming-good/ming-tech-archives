@@ -59,4 +59,13 @@
 	- `lateinit val 변수`
 	- `val 변수:타입 by lazy{}`
 - [[26_비트 연산]]
-- 
+- [[27_코루틴]]
+	- `coroutineScope`
+	- `runBlocking{}`
+	- `async(){}`
+		- `await()`
+	- `launch(){}`
+		- `join()`
+	- `suspend fun`
+	- `Executors.newFixedThreadPool(4).asCoroutineDispatcher()`
+		- `.use{}`
