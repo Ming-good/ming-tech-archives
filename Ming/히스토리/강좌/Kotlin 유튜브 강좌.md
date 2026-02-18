@@ -54,3 +54,9 @@
 	- `flatMap`
 	- `getOrElse`
 	- `zip`
+- [[25_고급 변수 선언]]
+	- `const val 변수`
+	- `lateinit val 변수`
+	- `val 변수:타입 by lazy{}`
+- [[26_비트 연산]]
+- 
