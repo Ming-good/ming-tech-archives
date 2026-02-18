@@ -66,6 +66,6 @@
 		- `await()`
 	- `launch(){}`
 		- `join()`
-	- `suspend fun`
+	- `suspend fun` : 비차단의 매직
 	- `Executors.newFixedThreadPool(4).asCoroutineDispatcher()`
 		- `.use{}`
