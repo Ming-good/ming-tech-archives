@@ -44,3 +44,13 @@
 - [[23_DATA와 ENUM]]
 	- `data class`
 	- `enum class`
+- [[24_컬렉션 함수]]
+	- `forEach`
+	- `map`
+	- `count`
+	- `associateBy`
+	- `groupBy`
+	- `partitionBy`
+	- `flatMap`
+	- `getOrElse`
+	- `zip`
