@@ -11,3 +11,7 @@
 	- 준영속
 	- 삭제
 - [[JPA 어노테이션]]
+	- `@Table`
+	- `@Access`
+	- `@SequenceGenerator`
+	- 기본키 매핑

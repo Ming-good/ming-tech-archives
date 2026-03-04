@@ -11,7 +11,7 @@
 	- `none`: 사용하지 않음
 #### `@Access`
 - JPA에서 객체에 대한 접근방식은 크게 필드 접근방법과 프로퍼티 접근방법으로 구분한다.
-#### `@SequenceGenerator()`
+#### `@SequenceGenerator`
 - Sequence 생성 전략은 DB의 Sequence 오브젝트를 이용해 기본키를 생성하는 방법이다.
 - Sequence 전략을 사용하기 위해서는 `@SequenceGenerator`가 필요하며 이 어노테이션을 이용해 여러 옵션을 적용할 수 있다.
 - 이 전략도 Identity 전략과 마찬가지고 데이터가 발생할 떄 생성되는 Sequence를 받아 영속 객체를 관리한다.
