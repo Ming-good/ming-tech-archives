@@ -15,6 +15,7 @@
 - Sequence 생성 전략은 DB의 Sequence 오브젝트를 이용해 기본키를 생성하는 방법이다.
 - Sequence 전략을 사용하기 위해서는 `@SequenceGenerator`가 필요하며 이 어노테이션을 이용해 여러 옵션을 적용할 수 있다.
 - 이 전략도 Identity 전략과 마찬가지고 데이터가 발생할 떄 생성되는 Sequence를 받아 영속 객체를 관리한다.
+- 만약에 기존에 DB에 있는 시퀀스를 사용하게된다면 id위에 `sequenceName`을 지정해주면 된다.
 - 옵션: 
 	- name: 
 	- sequenceName: 시퀀스 이름
@@ -39,3 +40,19 @@ create table customer_tb (
 	- table: 별도의 기본키 테이블을 이용해 기본키 생성
 	- auto: 데이터베이스에 따라 기본키 생성 전략(defalut)
 > 피해야 할 타입 : `float, Float, double` 등을 피해야 함.
+
+---
+```kotlin
+@Entity  
+@Table(name = "customer_tb")  
+@SequenceGenerator(name = "customer_tb_seq", sequenceName = "customer_tb_seq", initialValue = 1, allocationSize = 50)  
+class Customer (  
+    @Id  
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_tb_seq")  
+    var id: Int? = null,  
+    var name: String? = null,  
+    var regDt: Long? = System.currentTimeMillis()
+    . 
+    .
+    .
+```
