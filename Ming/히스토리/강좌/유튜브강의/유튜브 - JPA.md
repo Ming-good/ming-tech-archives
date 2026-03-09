@@ -11,7 +11,17 @@
 	- 준영속
 	- 삭제
 - [[JPA 어노테이션]]
-	- `@Table`
-	- `@Access`
-	- `@SequenceGenerator`
+	- 테이블 어노테이션
+		- `@Table`
+		- `@Access`
+		- `@SequenceGenerator`
 	- 기본키 매핑
+		- `@Id`
+		- `@GeneratedValue`
+		- `@TableGenerator`
+	- 필드와 칼럼 맵핑
+		- `@Coulumn`
+		- `@Temporal`
+		- `@Lob`
+		- `@Enumerated`
+		- `@Transient`

@@ -39,9 +39,11 @@ create table customer_tb (
 	- sequence: 시퀀스를 이용한 기본키 생성
 	- table: 별도의 기본키 테이블을 이용해 기본키 생성
 	- auto: 데이터베이스에 따라 기본키 생성 전략(defalut)
+- `@TableGenerator`: 기본키 생성을 위해 별도의 테이블을 생성하고 이 테이블을 이용해 기본키를 생성한다.
 > 피해야 할 타입 : `float, Float, double` 등을 피해야 함.
 
----
+
+> 시퀀스를 통해 ID를 생성하는 방법
 ```kotlin
 @Entity  
 @Table(name = "customer_tb")  
@@ -56,3 +58,59 @@ class Customer (
     .
     .
 ```
+
+>테이블을 통해 ID를 생성하는 방법
+```kotlin
+@TableGenerator(  
+    name="id_generator",  
+    table="customer_id",  
+    pkColumnName = "id_name",  
+    pkColumnValue = "customer_id",  
+    valueColumnName = "next_value",  
+    initialValue = 0,  
+    allocationSize = 1  
+)
+class Customer (  
+    @Id  
+	@GeneratedValue(
+		strategy = GenerationType.TABLE, 
+		generator = "id_generator"
+	)  
+    var id: Int? = null,  
+    var name: String? = null,  
+    var regDt: Long? = System.currentTimeMillis()  
+    .
+    .
+    .
+```
+
+## 필드와 칼럼 매핑
+#### `@Column`
+![[Pasted image 20260309230113.png]]
+![[Pasted image 20260309230053.png]]
+
+#### `@Temporal`
+영속 객체의 날짜 및 시간 필드에 적용됨
+![[Pasted image 20260309230904.png]]
+![[Pasted image 20260309230859.png]]
+- Java8  이후 java.time 패키지의 `LocalDate`, `LocalTim`, `LocalDateTime`을 사용할 경우 적용하지 않는다.
+#### `@Lob`
+- RDBMS에서 대규모 데이터를 저장하기 위해 BLOB OR CLOB 데이터 유형을 지원한다.
+- BLOB: 바이트 까지의 이미지, 파일, 기타 유형의 데이터를 저장
+- CLOB: 기가 바이트 까지의 긴 문자열을 저장
+- `@Lob`: 어노테이션이 선언된 객체의 필드 및 속성의 유형에 따라 BLOB, CLOB로 구분된다.
+- 주로 `@Basic`어노테이션과 함께 LAZY 로딩을 선언해서 사용한다
+![[Pasted image 20260309231420.png]]
+
+#### `@Enumerated`
+- Enum 유형으로 선언된 값은 배열과 동일하게 ordinal이라 부르는 인덱스 값에 연결된다.
+- Enum 유형의 필드 또는 속성을 맵핑하는 경우 기본값으로 EnumType.ORDINAL이 적용된다.
+> EnumType.ORDINAL은 사용을 권장되지 않는다. ORDINAL을 사용할 경우 위에서부터 순서대로 0,1,2,3이 되는데 새로운 값이 추가될 경우 기존 상수의 값이 밀려서 변경이 있을 수 있기 때문
+
+![[Pasted image 20260309231913.png]]
+
+#### `@Transient`
+- `@Transient`가 적용된 필드는 영속화 되지 않는다.
+- `@Transient`는 주로 실행 시점에 참조되는 필드 또는 계산되는 필드에 사용된다.
+- 속성(property)기반 접근일 경우 `@Transient`는 getter에 적용된다.
+- 자바에서 제공하는 `transient` 키워드와 `@Transient` 어노테이션의 사용목적은 거의 동일하다.
