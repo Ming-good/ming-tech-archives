@@ -29,3 +29,4 @@
 	- `@ManyToOne`
 	- `@OneToMany`
 - [[스프링 JPA 쿼리 메소드]]
+- [[1 PLUS N 문제]]
