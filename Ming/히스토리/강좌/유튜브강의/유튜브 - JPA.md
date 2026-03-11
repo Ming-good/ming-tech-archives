@@ -26,4 +26,6 @@
 		- `@Enumerated`
 		- `@Transient`
 - [[연관 관계]]
-	- `@ManyTo`
+	- `@ManyToOne`
+	- `@OneToMany`
+- [[스프링 JPA 쿼리 메소드]]
