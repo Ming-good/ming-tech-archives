@@ -25,3 +25,5 @@
 		- `@Lob`
 		- `@Enumerated`
 		- `@Transient`
+- [[연관 관계]]
+	- `@ManyTo`
