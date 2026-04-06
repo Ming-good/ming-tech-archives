@@ -26,7 +26,7 @@
 	- [OAuth2AuthorizationRequestRedirectFilter : 스프링 (6.2.1) API 문서 바로가기](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/web/OAuth2AuthorizationRequestRedirectFilter.html)
 - ** OAuth2LoginAuthenticationFilter**
 	- [OAuth2LoginAuthenticationFilter : 스프링 (6.2.1) API 문서 바로가기](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/web/OAuth2LoginAuthenticationFilter.html)
-**- OAuth2LoginAuthenticationProvider**
+- * OAuth2LoginAuthenticationProvider**
 	- [OAuth2LoginAuthenticationProvider : 스프링 (6.2.1) API 문서 바로가기](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/authentication/OAuth2LoginAuthenticationProvider.html)
 - ** OAuth2 클라이언트 세션**
 	- [OAuth2 클라이언트 세션 : 개발자 유미 재생목록 바로가기](https://www.youtube.com/playlist?list=PLJkjrxxiBSFBGk0b931ZkCVlNUo7sFisu)
