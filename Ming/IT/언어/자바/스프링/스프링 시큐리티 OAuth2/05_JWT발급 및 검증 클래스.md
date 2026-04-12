@@ -91,3 +91,64 @@ class CustomSuccessHandler(
 }
 ```
 
+#### JWT 검증 필터
+```kotlin
+class JWTFilter(  
+    private val jwtUtil: JWTUtil  
+): OncePerRequestFilter() {  
+    private val log = log()  
+  
+    override fun doFilterInternal(  
+        request: HttpServletRequest,  
+        response: HttpServletResponse,  
+        filterChain: FilterChain  
+    ) {  
+        val cookies = request.cookies  
+        val token = cookies.find { it.name == "Authorization" }?.value  
+  
+        if (token == null || !jwtUtil.isExpired(token)) {  
+            filterChain.doFilter(request, response)  
+            return  
+        }  
+  
+        val userId = jwtUtil.getUserId(token)  
+        val email = jwtUtil.getEmail(token)  
+        val name = jwtUtil.getName(token)  
+  
+        // 유저 정보 객체  
+        val customerAuthUser = CustomOAuth2User(UserDto(userId, email, name))  
+  
+        // 스프링 시큐리티 인증 토큰 생성  
+        val authToken = UsernamePasswordAuthenticationToken(customerAuthUser, null, customerAuthUser.authorities)  
+  
+        // 세션에 사용자 등록 => 인증 완료후 세션 STATELESS상태를 위해 삭제 예정  
+        SecurityContextHolder.getContext().authentication = authToken  
+        filterChain.doFilter(request, response)  
+    }  
+  
+}
+```
+
+#### 필터 등록
+```kotlin
+fun filtetChain(http: HttpSecurity): SecurityFilterChain{  
+    return http.cors { it.configurationSource(corsConfigurationSource()) }  
+        .csrf{it.disable()}  
+        .formLogin { it.disable() }  
+        .httpBasic { it.disable() }  
+        .addFilterBefore(JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)  
+        .oauth2Login{  
+            it.userInfoEndpoint{  
+                it.userService(customerUserService)  
+            }.successHandler(customerSuccessHandler)  
+        }  
+        .authorizeHttpRequests {  
+            it.requestMatchers("/", "/api/v1/tag/test*")  
+                .permitAll()  
+                .anyRequest()  
+                .authenticated()  
+        }  
+        .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }  
+        .build()  
+}
+```
