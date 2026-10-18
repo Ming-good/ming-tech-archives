@@ -3,5 +3,7 @@
   "excalibrain",
   "dataview",
   "obsidian-excalidraw-plugin",
-  "graph-analysis"
+  "graph-analysis",
+  "obsidian-minimal-settings",
+  "obsidian-style-settings"
 ]
