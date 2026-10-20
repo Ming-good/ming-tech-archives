@@ -59,3 +59,24 @@ body {
   margin-top: 1.8em;
   margin-bottom: 0.6em;
 }
+
+
+/* 참고 사항(>) 글자 및 테두리 색상 */
+body {
+  --blockquote-color: #F2C879;
+  --blockquote-border-color: #F2C879;
+}
+
+/* 읽기 모드 */
+.markdown-rendered blockquote,
+.markdown-rendered blockquote p {
+  color: #F2C879 !important;
+}
+
+/* 라이브 미리보기(편집 모드) */
+.markdown-source-view.mod-cm6
+.HyperMD-quote,
+.markdown-source-view.mod-cm6
+.HyperMD-quote .cm-quote {
+  color: #F2C879 !important;
+}
