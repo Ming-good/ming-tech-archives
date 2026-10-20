@@ -1,0 +1,55 @@
+
+/* 제목 크기 및 색상 */
+body {
+  --h1-size: 1.55em;
+  --h2-size: 1.3em;
+  --h3-size: 1.12em;
+
+  --h1-weight: 700;
+  --h2-weight: 700;
+
+  --h1-color: #B7D1FF;
+  --h2-color: #9DBFF5;
+
+  /* 목록 간격과 들여쓰기 */
+  --list-indent: 1.45em;
+  --list-indent-editing: 1.45em;
+  --list-spacing: 0.2em;
+}
+
+/* 편집 모드: 주요 항목 강조 */
+.markdown-source-view.mod-cm6
+.HyperMD-list-line-1 {
+  font-weight: 650;
+}
+
+/* 편집 모드: 하위 항목 자동 축소 */
+.markdown-source-view.mod-cm6
+.HyperMD-list-line-2 {
+  font-size: 0.97em;
+}
+
+.markdown-source-view.mod-cm6
+:is(.HyperMD-list-line-3,
+    .HyperMD-list-line-4,
+    .HyperMD-list-line-5) {
+  font-size: 0.95em;
+}
+
+/* 읽기 모드: 최상위 목록 강조 */
+.markdown-reading-view
+.markdown-rendered li:not(li li) {
+  font-weight: 650;
+}
+
+/* 읽기 모드: 하위 목록 */
+.markdown-reading-view
+.markdown-rendered li li {
+  font-size: calc(var(--font-text-size) * 0.97);
+  font-weight: 400;
+}
+
+.markdown-reading-view
+.markdown-rendered li li li {
+  font-size: calc(var(--font-text-size) * 0.95);
+}
