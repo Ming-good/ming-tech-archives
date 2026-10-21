@@ -80,3 +80,7 @@ body {
 .HyperMD-quote .cm-quote {
   color: #F2C879 !important;
 }
+
+.internal-embed[data-hwm-decorated="1"] {
+    width: min(100%, 320px) !important;
+}

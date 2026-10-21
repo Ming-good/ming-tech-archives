@@ -1,0 +1,1819 @@
+/* ========================================
+   Handwriting to Markdown — Plugin Styles
+   Prefisso hwm_ per evitare conflitti
+   ======================================== */
+
+/* ========================================
+   UTILITY CLASSES — Usate da JS per toggle
+   ======================================== */
+
+/* Nasconde un elemento (sostituisce style.display = 'none').
+   Compound selector (0,2,0) batte specificità dei selettori target (0,1,0). */
+.hwm_portal-panel.hwm_hidden,
+.hwm_portal-btn.hwm_hidden { display: none; }
+.hwm_hidden.hwm_hidden { display: none; }
+
+/* Annulla pointer-events (usato da stripContentEditableFalse sul formato legacy) */
+.hwm_no-pointer {
+	pointer-events: none;
+}
+
+/* Overflow hidden per l'animazione collapse del wrapper immagine */
+.hwm_overflow-hidden {
+	overflow: hidden;
+}
+
+/* Disabilita transizioni CSS temporaneamente (usato in syncWrapperHeight).
+   Compound selector (0,2,0) batte .hwm_clip-wrapper { transition } (0,1,0). */
+.hwm_clip-wrapper.hwm_no-transition { transition: none; }
+
+/* Wrapper clip (collapse/expand nuovo formato).
+   Animiamo solo il wrapper, non il container span, così il ResizeObserver
+   di Obsidian Mobile non si attiva e non re-imposta le dimensioni dell'img. */
+.hwm_clip-wrapper {
+	width: 100%;
+	background: transparent;
+	transition: height 0.3s ease;
+}
+.hwm_clip-animating {
+	height: var(--hwm-clip-h, auto);
+}
+
+/* Lo span internal-embed decorato dal plugin riceve position:relative
+   (ancoraggo del pannello portale position:absolute) e pointer-events:none
+   (non blocca lo stylus Android; il pannello portale ha pointer-events:auto) */
+.internal-embed[data-hwm-decorated="1"] {
+	position: relative;
+	pointer-events: none;
+}
+.markdown-reading-view .internal-embed[data-hwm-decorated="1"] {
+	pointer-events: auto;
+}
+.markdown-preview-view .internal-embed[data-hwm-decorated="1"],
+.markdown-rendered .internal-embed[data-hwm-decorated="1"] {
+	pointer-events: auto !important;
+}
+.markdown-reading-view .internal-embed[data-hwm-decorated="1"] {
+	/* Keep normal one-finger page panning but disable browser double-tap zoom;
+	   the plugin owns that gesture to enter the inline editor. */
+	touch-action: manipulation;
+}
+
+/* --- Container principale dell'embed --- */
+.hwm_container {
+	position: relative;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	overflow: hidden;
+	margin: 8px 0;
+	/* Sfondo via CSS var (impostato con setCssProps --hwm-bg) con fallback bianco */
+	background-color: var(--hwm-bg, #ffffff);
+	/* Riabilita pointer-events (i wrapper CM6 sopra hanno pointer-events: none
+	   per non bloccare l'hit-test dell'handwriting Android) */
+	pointer-events: auto;
+}
+
+/* --- Modalità handwriting Android (switch nelle impostazioni) ---
+   Quando attiva (classe hwm-handwriting-mode su document.body), i riquadri
+   handwriting mostrano un box compatto con icona invece dell'SVG a piena
+   altezza. Questo riduce l'area CE=false che interferisce con la proximity
+   detection dello stylus handwriting di Android.
+   L'SVG viene nascosto; il pannello portale (position:absolute) rimane visibile
+   sopra il box per permettere apertura editor ed eliminazione. */
+.hwm-handwriting-mode .hwm-badge-mode {
+	/* Larghezza piena: lo span .internal-embed di default può restare stretto
+	   quanto l'immagine — forziamo 100% per contenere correttamente il pannello portale */
+	width: 100%;
+	box-sizing: border-box;
+	/* Altezza fissa: abbastanza alta da contenere il pannello portale (~34px)
+	   senza occupare troppo spazio nel documento */
+	height: 72px;
+	max-height: 72px;
+	min-height: 72px;
+	overflow: hidden;
+	cursor: default;
+	/* Flex per centrare l'icona */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--background-secondary, #f0f0f0);
+	border-radius: var(--radius-m);
+}
+/* Nasconde l'SVG: mostriamo solo il box con l'icona */
+.hwm-handwriting-mode .hwm-badge-mode img {
+	display: none;
+}
+/* Icona matita centrata via pseudo-elemento */
+.hwm-handwriting-mode .hwm-badge-mode::after {
+	content: "✏️";
+	font-size: 28px;
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* SVG a piena larghezza in tutti i contesti (desktop).
+   Su mobile le regole .hwm-handwriting-mode sovrastano questo.
+   NO overflow:hidden sullo span: clipperebbe i tratti ai bordi dell'SVG.
+   Il border-radius va sull'img per arrotondarne gli angoli visivi. */
+.internal-embed[data-hwm-decorated="1"] {
+	display: block;
+	width: 100%;
+	border-radius: var(--radius-m);
+	/* Bordo e ombra per rendere il riquadro visibile contro lo sfondo Obsidian */
+	border: 1.5px solid var(--background-modifier-border);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+	/* Elimina whitespace implicito sotto l'img (gap tra img e bordo su Android) */
+	padding: 0;
+	line-height: 0;
+}
+.internal-embed[data-hwm-decorated="1"] img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: none;
+	border-radius: var(--radius-m);
+}
+
+/* Variante wiki ![[svg]]:
+   La classe hwm_container viene aggiunta DIRETTAMENTE allo span
+   .internal-embed di Obsidian (nessun wrapper esterno, per non
+   spostare i nodi CM6 e causare crash del virtual DOM).
+   L'immagine è già renderizzata da Obsidian; noi aggiungiamo solo
+   i bottoni come figli dello span. */
+.hwm_container--wiki {
+	background: transparent; /* l'SVG ha già il suo sfondo */
+	width: 100%;
+	box-sizing: border-box;
+}
+.hwm_container--wiki img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* --- Toolbar in alto a destra --- */
+.hwm_toolbar {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	gap: 0; /* spacing gestito via margin-right sui bottoni, così i bottoni
+	           nascosti (max-width:0, margin:0) non creano spazi vuoti */
+	padding: 3px 6px;
+	border-radius: var(--radius-m);
+	background: rgba(240, 240, 240, 0.95);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	opacity: 1;
+	transition: opacity 0.2s;
+}
+
+/* --- Bottoni toolbar --- */
+.hwm_btn {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-s);
+	background: transparent;
+	color: #666666;
+	cursor: pointer;
+	line-height: 0;
+	/* Spacing via margin-right invece di gap, così i bottoni nascosti
+	   (margin:0) non lasciano spazi vuoti nella toolbar compatta */
+	margin-right: 4px;
+	/* Animazione espansione/compressione toolbar */
+	overflow: hidden;
+	max-width: 40px;
+	flex-shrink: 0;
+	transition: max-width 0.2s ease, opacity 0.2s ease,
+	            margin 0.2s ease, padding 0.2s ease;
+}
+/* Icone SVG inline dentro i bottoni */
+.hwm_btn svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+.hwm_btn:hover {
+	background: #e0e0e0;
+	color: #333333;
+}
+/* Bottone attivo (tool selezionato) */
+.hwm_btn.hwm_active {
+	background: var(--interactive-accent);
+	color: #ffffff;
+}
+
+/* --- Bottone salva (evidenziato) --- */
+.hwm_save-btn {
+	margin-left: 4px;
+}
+.hwm_save-btn:hover {
+	background: var(--interactive-accent);
+	color: #ffffff;
+}
+
+/* --- Bottone elimina (X rossa su hover) --- */
+.hwm_delete-btn:hover {
+	background: #dc2626;
+	color: #ffffff;
+}
+
+/* --- Selettore colori --- */
+.hwm_colors {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	margin: 0 4px;
+}
+/* Real buttons make colour taps reliable in Obsidian Android. */
+.hwm_toolbar .hwm_color-btn {
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+	min-width: 22px;
+	min-height: 22px;
+	border: 2px solid transparent;
+	border-radius: 50%;
+	cursor: pointer;
+	box-sizing: border-box;
+	flex-shrink: 0;
+	background-color: var(--hwm-btn-color, transparent);
+	padding: 0;
+	appearance: none;
+	transition: max-width 0.2s ease, opacity 0.2s ease,
+	            margin 0.2s ease, padding 0.2s ease;
+}
+.hwm_color-btn.hwm_active {
+	border-color: var(--interactive-accent);
+}
+.hwm_color-btn:hover {
+	border-color: #999999;
+}
+
+/* --- Area canvas (editing) --- */
+.hwm_canvas-wrap {
+	width: 100%;
+	position: relative;
+	/* Centra il canvas orizzontalmente quando il modal/tab è più largo
+	   della risoluzione nativa del canvas (canvasWidth dalle settings) */
+	display: flex;
+	justify-content: center;
+}
+.hwm_canvas {
+	display: block;
+	/* max-width invece di width:100% per evitare che il canvas venga stirato
+	   oltre la sua risoluzione nativa (canvasWidth dai settings).
+	   Stirarlo causerebbe tratti pixelati nel modal / tab full-screen. */
+	max-width: 100%;
+	cursor: crosshair;
+	/* The actual paper color is painted by DrawingCanvas. Keeping the element
+	   transparent lets a transparent paper reveal the note underneath. */
+	background: transparent;
+	/* Previene scroll/zoom del browser durante il disegno con pennino/dito */
+	touch-action: none;
+}
+.hwm_canvas--eraser { cursor: cell; }
+.hwm_canvas-detail {
+	position: absolute;
+	pointer-events: none;
+	z-index: 1;
+	max-width: 100%;
+}
+.hwm_canvas-detail--hidden { display: none; }
+.hwm_input-diagnostic {
+	padding: 6px 10px;
+	background: var(--background-secondary);
+	border-bottom: 1px solid var(--background-modifier-border);
+	font-size: 11px;
+}
+.hwm_input-diagnostic-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.hwm_input-diagnostic pre {
+	max-height: 88px;
+	margin: 4px 0 0;
+	overflow: auto;
+	user-select: text;
+	white-space: pre-wrap;
+}
+
+/* --- Handle di resize in basso --- */
+.hwm_resize-handle {
+	width: 100%;
+	height: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: ns-resize;
+	background: #f5f5f5;
+	border: 1px solid #e0e0e0;
+	color: #999999;
+	font-size: 14px;
+	user-select: none;
+	touch-action: none;
+}
+.hwm_resize-handle:hover {
+	background: #ebebeb;
+	color: #666666;
+}
+.hwm_resize-handle--dark {
+	background: #2a2a2a;
+	border-top-color: #444444;
+	color: #888888;
+}
+.hwm_resize-handle--dark:hover {
+	background: #333333;
+	color: #aaaaaa;
+}
+
+
+/* --- Modal wiki editor --- */
+.hwm_wiki-modal-content {
+	padding: 0;
+	overflow-y: auto;
+}
+.hwm_wiki-modal-content .hwm_container {
+	border-radius: 0;
+	border: none;
+	margin: 0;
+}
+
+/* --- SVG collassato (bottone ↕) --- */
+.hwm-collapsed {
+	max-height: 48px;
+	overflow: hidden;
+}
+
+/* --- Preview mode --- */
+.hwm_preview-wrap {
+	position: relative;
+	display: block;
+	width: 100%;
+}
+/* L'immagine SVG occupa tutta la larghezza del container */
+.hwm_preview-img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+/* Bottone matita sovrapposto in alto a destra sulla preview */
+.hwm_preview-wrap .hwm_pencil-btn {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 32px;
+	height: 32px;
+	background: rgba(0, 0, 0, 0.45);
+	border-radius: 6px;
+	color: #ffffff;
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+.hwm_preview-wrap:hover .hwm_pencil-btn {
+	opacity: 1;
+}
+/* Su mobile il bottone è sempre visibile (no hover) */
+.hwm_mobile .hwm_pencil-btn {
+	opacity: 1;
+}
+
+/* --- Placeholder per canvas vuoto --- */
+.hwm_placeholder {
+	text-align: center;
+	color: #999999;
+	padding: 40px 0;
+	font-style: italic;
+}
+
+/* --- Errore parsing --- */
+.hwm_error {
+	color: var(--text-error);
+	padding: 8px;
+	font-style: italic;
+}
+
+/* --- Separatore visivo nella toolbar --- */
+.hwm_separator {
+	width: 1px;
+	height: 20px;
+	background: #d0d0d0;
+	margin: 0 6px 0 2px; /* destra più ampia per bilanciare visivamente */
+	flex-shrink: 0;
+	overflow: hidden;
+	transition: max-width 0.2s ease, opacity 0.2s ease,
+	            margin 0.2s ease, padding 0.2s ease;
+}
+
+
+/* --- Toolbar compatta (mobile) ---
+   Bottoni nascosti: collassati a larghezza 0 con fade-out.
+   La transizione su .hwm_btn e .hwm_separator produce l'animazione
+   quando la classe viene aggiunta/rimossa via JS. */
+.hwm_toolbar--compact .hwm_pen-btn,
+.hwm_toolbar--compact .hwm_eraser-btn,
+.hwm_toolbar--compact .hwm_clear-btn,
+.hwm_toolbar--compact .hwm_save-btn,
+.hwm_toolbar--compact .hwm_color-btn:not(.hwm_active),
+.hwm_toolbar--compact .hwm_separator {
+	max-width: 0;
+	opacity: 0;
+	padding: 0;
+	margin: 0;
+	pointer-events: none;
+}
+/* Riduce il margine attorno al pallino colore rimasto e azzera il gap
+   tra i pallini (gli inattivi sono collassati a width:0 ma il gap persiste) */
+.hwm_toolbar--compact .hwm_colors {
+	margin: 0 2px;
+	gap: 0;
+}
+
+/* --- Tema scuro per la toolbar ---
+   Applicato via classe hwm_toolbar--dark quando bgMode === 'dark' */
+.hwm_toolbar--dark {
+	background: rgba(40, 40, 40, 0.97);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.hwm_toolbar--dark .hwm_btn {
+	color: #bbbbbb;
+}
+.hwm_toolbar--dark .hwm_btn:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+}
+.hwm_toolbar--dark .hwm_btn.hwm_active {
+	background: var(--interactive-accent);
+	color: #ffffff;
+}
+.hwm_toolbar--dark .hwm_separator {
+	background: #555555;
+}
+
+/* --- Mobile: bottoni grandi e visibili ---
+   Forza sfondo chiaro + colore scuro per le icone SVG,
+   indipendentemente dal tema di Obsidian Mobile */
+.hwm_mobile .hwm_toolbar {
+	gap: 0;
+	padding: 5px 8px;
+}
+.hwm_mobile .hwm_toolbar .hwm_btn {
+	width: 36px;
+	height: 36px;
+	margin-right: 6px; /* spacing via margin, non gap */
+	background: rgba(245, 245, 245, 0.98);
+	border: 1px solid rgba(0, 0, 0, 0.18);
+	border-radius: var(--radius-m);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+	color: #222222;
+}
+.hwm_mobile .hwm_toolbar .hwm_btn.hwm_active {
+	background: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+	color: #ffffff;
+}
+
+/* --- Tema scuro su mobile: sovrascrive gli stili light del mobile --- */
+.hwm_mobile .hwm_toolbar--dark .hwm_btn {
+	background: rgba(55, 55, 55, 0.98);
+	border-color: rgba(255, 255, 255, 0.15);
+	color: #dddddd;
+}
+.hwm_mobile .hwm_toolbar--dark .hwm_btn.hwm_active {
+	background: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+	color: #ffffff;
+}
+
+/* ========================================
+   INLINE PREVIEW — Vista nel documento
+   ======================================== */
+
+/* --- Bottoni inline (elimina, comprimi) ---
+   Posizionati in alto a sinistra per non coprire il bottone </> di Obsidian */
+.hwm_inline-buttons {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	z-index: 5;
+	display: flex;
+	gap: 4px;
+	padding: 3px;
+	border-radius: var(--radius-m);
+	background: rgba(240, 240, 240, 0.9);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+.hwm_inline-buttons--dark {
+	background: rgba(40, 40, 40, 0.95);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.hwm_inline-buttons--dark .hwm_btn {
+	color: #bbbbbb;
+}
+.hwm_inline-buttons--dark .hwm_btn:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+}
+
+/* --- Bottone comprimi: rotazione 180° quando compresso --- */
+.hwm_collapse-btn {
+	transition: transform 0.3s ease, max-width 0.2s ease,
+	            opacity 0.2s ease, margin 0.2s ease, padding 0.2s ease;
+}
+.hwm_collapse-btn.hwm_rotated {
+	transform: rotate(180deg);
+}
+
+/* --- Preview SVG inline --- */
+.hwm_inline-preview {
+	width: 100%;
+	overflow: hidden;
+	cursor: pointer;
+	/* Transizione per l'espansione/compressione */
+	transition: max-height 0.3s ease;
+}
+.hwm_inline-preview.hwm_collapsed {
+	/* max-height e overflow impostati tramite CSS var --hwm-max-h (setCssProps) */
+	max-height: var(--hwm-max-h, 48px);
+	overflow: hidden;
+}
+
+/* Preview SVG via background-image (nessun <img> nel DOM per non
+   interferire con l'handwriting Android dentro cm-content) */
+.hwm_preview-bg {
+	width: 100%;
+	height: 0; /* l'altezza è data da padding-bottom (aspect ratio) */
+	/* Immagine e proporzioni impostate via setCssProps --hwm-bg-img e --hwm-ratio */
+	background-image: var(--hwm-bg-img);
+	padding-bottom: var(--hwm-ratio, 37.5%);
+	min-height: 400px;
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	background-position: top left;
+	pointer-events: none; /* il click è gestito dal div padre */
+}
+
+/* ========================================
+   PANNELLO PORTALE — Fuori da cm-content
+   Contiene tutti i bottoni del formato wiki.
+   Vive in document.body → zero impatto su
+   cm-content → non rompe handwriting Android
+   ======================================== */
+
+/* Pannello con tutti i bottoni (nuovo formato ![[svg]]).
+   Vive dentro lo span .internal-embed (position: relative impostato via JS).
+   Con position: absolute segue il DOM: scompare quando lo span non è visibile
+   (scroll, impostazioni aperte, cambio tab) senza nessuna logica JS aggiuntiva. */
+.hwm_portal-panel {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 10; /* sufficiente per stare sopra l'img interna */
+	display: flex;
+	align-items: center;
+	gap: 0; /* spacing via margin-right sui .hwm_btn */
+	padding: 3px 6px;
+	border-radius: var(--radius-m);
+	background: rgba(240, 240, 240, 0.95);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	/* Lo span padre ha pointer-events:none (per handwriting Android):
+	   ripristina i click sui bottoni del pannello */
+	pointer-events: auto;
+}
+/* Tema scuro del pannello portale (classe aggiunta via JS in base a bgMode) */
+.hwm_portal-panel--dark {
+	background: rgba(40, 40, 40, 0.97);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.hwm_portal-panel--dark .hwm_btn {
+	color: #bbbbbb;
+}
+.hwm_portal-panel--dark .hwm_btn:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+}
+
+/* Bottone cerchio singolo (formato legacy).
+   Usa <div role="button"> invece di <button> per evitare gli stili globali Obsidian sui button. */
+.hwm_portal-btn {
+	position: fixed; /* coordinate viewport via CSS var --hwm-top e --hwm-left */
+	top: var(--hwm-top, 0);
+	left: var(--hwm-left, 0);
+	z-index: 100;
+	width: 36px;
+	height: 36px;
+	min-width: 36px;
+	min-height: 36px;
+	padding: 0;
+	border-radius: 50%;
+	border: none;
+	background: var(--interactive-accent);
+	color: #ffffff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden; /* evita che l'SVG allarghi il bottone */
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.hwm_portal-btn svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	stroke: #ffffff; /* forza icona bianca indipendentemente da currentColor */
+}
+.hwm_portal-btn:hover {
+	transform: scale(1.1);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ========================================
+   DRAWING MODAL — Editor come overlay
+   ======================================== */
+
+.modal-container .hwm_modal {
+	width: 95vw;
+	max-width: 95vw;
+	height: 90vh;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--radius-l);
+	overflow: hidden;
+}
+.hwm_modal .modal-content {
+	flex: 1;
+	padding: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--radius-l);
+}
+
+/* ========================================
+   EDITOR VIEW — Tab dedicata al disegno
+   ======================================== */
+
+/* Container principale dell'editor view */
+.hwm_editor-view {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	/* Sfondo via CSS var (impostato con setCssProps --hwm-bg) con fallback bianco */
+	background-color: var(--hwm-bg, #ffffff);
+}
+
+/* --- Top bar: ← a sinistra | toolbar a destra --- */
+/* Layout a 0,1,0: .hwm_editor-topbar--modal (0,1,0, viene dopo) può
+   sovrascrivere justify-content: center perché stessa specificità + ordine CSS. */
+.hwm_editor-topbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 8px;
+	flex-shrink: 0;
+	gap: 8px;
+}
+/* Sfondo/bordo a 0,2,0: batte le regole dark-mode di Obsidian (0,1,0..0,1,1).
+   Funziona sia in DrawingEditorView (dentro .workspace) che in
+   DrawingModal (dentro .modal-container): entrambi aggiungono
+   hwm_editor-view al contentEl prima di buildEditorUI. */
+.hwm_editor-view .hwm_editor-topbar {
+	background: rgba(240, 240, 240, 0.95);
+	border-bottom: 1px solid #dddddd;
+}
+.hwm_editor-view .hwm_editor-topbar--dark {
+	background: rgba(40, 40, 40, 0.97);
+	border-bottom-color: #444444;
+}
+
+/* Background e colore icone dentro il topbar dell'editor.
+   Specificità 0,2,0 (.hwm_editor-topbar .hwm_btn) batte Obsidian 0,1,1 (.modal-content button).
+   Le due regole .hwm_btn e --dark .hwm_btn hanno stessa specificità (0,2,0)
+   ma --dark appare dopo → vince in dark mode. */
+.hwm_editor-topbar .hwm_btn {
+	background: transparent;
+	color: #333333;
+}
+.hwm_editor-topbar--dark .hwm_btn {
+	background: transparent;
+	color: #bbbbbb;
+}
+/* Hover light: sfondo grigio chiaro */
+.hwm_editor-topbar .hwm_btn:hover:not(.hwm_active) {
+	background: #e0e0e0;
+	color: #333333;
+}
+/* Hover dark: sfondo bianco semi-trasparente */
+.hwm_editor-topbar--dark .hwm_btn:hover:not(.hwm_active) {
+	background: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+}
+/* Bottone attivo (tool selezionato): sempre sfondo accent e icona bianca */
+.hwm_editor-topbar .hwm_btn.hwm_active {
+	background: var(--interactive-accent);
+	color: #ffffff;
+}
+
+/* Bottone ← (indietro, a sinistra) */
+.hwm_back-btn {
+	flex-shrink: 0;
+}
+
+/* Toolbar dentro l'editor view: posizione statica, allineata a destra.
+   .hwm_editor-topbar .hwm_editor-toolbar (0,2,0) > .hwm_toolbar (0,1,0) */
+.hwm_editor-topbar .hwm_editor-toolbar {
+	position: static;
+	top: auto;
+	right: auto;
+	box-shadow: none;
+	background: transparent;
+	padding: 0;
+}
+
+/* Topbar centrata: usata sia nel DrawingModal (Windows) che in DrawingEditorView (Android).
+   position: relative serve ad ancorare il bottone chiudi (position: absolute) */
+.hwm_editor-topbar--modal {
+	justify-content: center;
+	position: relative;
+}
+
+/* Bottone X chiudi: ancorato al bordo destro del topbar, indipendente dal toolbar centrato */
+.hwm_editor-topbar--modal .hwm_close-btn {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+/* Nasconde la X nativa di Obsidian nel DrawingModal: la chiusura avviene dal bottone X in toolbar.
+   Specificità 0,3,0 basta a battere Obsidian senza !important. */
+.modal-container .hwm_modal .modal-close-button {
+	display: none;
+}
+
+/* Overlay di conferma inline — no Modal annidato, nessun furto di focus */
+.hwm_confirm-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	z-index: 100; /* sopra il pannello portale (z-index: 10) */
+	border-radius: inherit;
+	pointer-events: auto; /* override pointer-events:none dello span padre */
+}
+.hwm_confirm-overlay button {
+	pointer-events: auto;
+}
+.hwm_confirm-msg {
+	color: #ffffff;
+	font-size: 14px;
+}
+
+/* L'img dentro il wrapper non deve mai rimpicciolirsi: occupa la larghezza
+   piena e la sua altezza naturale, poi il wrapper la clippa dall'alto.
+   .workspace .hwm_clip-wrapper img (0,2,1) > regole img di Obsidian (≤0,1,1) */
+.workspace .hwm_clip-wrapper img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: none;
+	min-height: 0;
+	object-fit: unset;
+	background: transparent;
+}
+
+/* --- Suggest SVG reference: thumbnail + nome file --- */
+.hwm_svg-suggest-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 4px 0;
+}
+.hwm_svg-thumb {
+	width: 80px;
+	height: 48px;
+	object-fit: contain;
+	border-radius: 4px;
+	background: var(--background-secondary);
+	flex-shrink: 0;
+}
+.hwm_svg-suggest-name {
+	font-size: 13px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* --- Scroll container per il canvas nell'editor --- */
+.hwm_editor-scroll {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* --- Resize handle disabilitato (visibile ma non interattivo) --- */
+.hwm_resize-handle--disabled {
+	pointer-events: none;
+	cursor: default;
+}
+.hwm_resize-handle--disabled:hover {
+	background: #f5f5f5; /* annulla l'effetto hover */
+}
+
+/* --- Impostazioni responsive: controlli compatti, descrizioni sempre leggibili ---
+   Il problema su portrait mobile: .setting-item-control ha flex-shrink:0 nel CSS
+   di Obsidian, quindi cresce fino a spingere la descrizione fuori schermo.
+   Soluzione: limitiamo la larghezza max dei controlli e, sotto 480px,
+   impiliamo verticalmente (descrizione sopra, controllo sotto). */
+
+/* Permette al controllo di restringersi se lo spazio è poco */
+.hwm_settings .setting-item-control {
+	flex-shrink: 1;
+	min-width: 0;
+}
+
+/* Input e select brevi (cartella, numeri, lingua): non crescono oltre 160px */
+.hwm_settings .setting-item-control input[type="text"],
+.hwm_settings .setting-item-control select {
+	max-width: 160px;
+	min-width: 60px;
+	width: auto;
+}
+
+/* Su schermi stretti (portrait tablet/phone): layout verticale */
+@media (max-width: 480px) {
+	.hwm_settings .setting-item {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	/* Il controllo va sotto, allineato a sinistra */
+	.hwm_settings .setting-item-control {
+		width: auto;
+		justify-content: flex-start;
+	}
+	/* Input e select: tornano a dimensione naturale, non più cappati */
+	.hwm_settings .setting-item-control input[type="text"],
+	.hwm_settings .setting-item-control select {
+		max-width: none;
+		width: auto;
+	}
+}
+.hwm_btn.hwm_show-tooltip {
+	overflow: visible;
+	z-index: 40;
+}
+.hwm_btn.hwm_show-tooltip::after {
+	content: attr(data-hwm-tooltip);
+	position: absolute;
+	top: calc(100% + 7px);
+	left: 50%;
+	transform: translateX(-50%);
+	width: max-content;
+	max-width: 180px;
+	padding: 5px 7px;
+	border-radius: var(--radius-s);
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	font-size: 12px;
+	line-height: 1.25;
+	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+	pointer-events: none;
+}
+.hwm_canvas-text-input {
+	position: absolute;
+	left: var(--hwm-text-left);
+	top: var(--hwm-text-top);
+	z-index: 5;
+	width: min(260px, calc(100% - var(--hwm-text-left) - 8px));
+	min-height: 32px;
+	padding: 5px 7px;
+	border: 1px solid var(--interactive-accent);
+	border-radius: var(--radius-s);
+	background: var(--background-primary);
+	color: var(--hwm-text-color, var(--text-normal));
+	font: 18px/1.35 var(--hwm-text-font, var(--font-text));
+	text-align: start;
+	resize: both;
+	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
+}
+
+/* Inline editor, rendered inside the active note rather than a modal/tab. */
+.hwm_live-preview-widget,
+.hwm_reading-inline-host {
+	position: relative;
+	display: block;
+	width: 100%;
+	margin: 0.5rem 0;
+}
+.hwm_live-preview-widget {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	overflow: hidden;
+	background: var(--background-primary);
+}
+.hwm_live-preview-image {
+	min-height: 64px;
+	background: var(--background-secondary);
+}
+.hwm_live-preview-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.hwm_live-preview-image span {
+	display: block;
+	padding: 1.5rem;
+	text-align: center;
+	color: var(--text-muted);
+}
+.hwm_live-preview-edit {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	z-index: 2;
+	min-width: 58px;
+	height: 34px;
+	padding: 6px;
+	border: 0;
+	border-radius: var(--radius-s);
+	background: rgba(0, 0, 0, 0.58);
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+.hwm_live-preview-edit:hover { background: var(--interactive-accent); }
+.hwm_live-preview-edit-label {
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+}
+.hwm_portal-panel .hwm_portal-edit-btn {
+	width: auto;
+	min-width: 54px;
+	padding: 0 7px;
+	gap: 3px;
+}
+.hwm_portal-edit-label {
+	font-size: 12px;
+	line-height: 1;
+}
+.hwm_inline-editor {
+	height: auto;
+	min-height: 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	/* Let the toolbar stick to Obsidian's note scroller instead of clipping it. */
+	overflow: visible;
+}
+.hwm_inline-editor .hwm_editor-topbar {
+	position: sticky;
+	top: 0;
+	z-index: 25;
+	align-items: center;
+	padding-right: 46px;
+	box-shadow: 0 2px 7px rgba(0, 0, 0, 0.12);
+}
+.hwm_inline-editor .hwm_editor-toolbar {
+	width: 100%;
+	max-width: 100%;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: center;
+	align-content: center;
+	overflow: visible;
+	padding: 9px 8px;
+	gap: 10px 12px;
+}
+.hwm_inline-editor .hwm_editor-scroll {
+	flex: 0 0 auto;
+	max-height: none;
+	overflow: visible;
+}
+.hwm_canvas-text-input--rtl {
+	transform: translateX(-100%);
+	width: min(260px, var(--hwm-text-left));
+}
+.hwm_inline-editor .hwm_canvas-wrap { min-width: min(100%, 320px); }
+.internal-embed[data-hwm-decorated="1"] .hwm_reading-inline-host { pointer-events: auto; }
+/* A full-width sticky host keeps both the belt and its menu in one coordinate
+   system. The belt remains centred, while the wider menu is centred/clamped
+   against the editor width rather than against the narrow belt. */
+.hwm_inline-editor .hwm_tool-belt-host {
+	position: sticky;
+	top: 4px;
+	z-index: 40;
+	width: 100%;
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: center;
+	overflow: visible;
+}
+.hwm_inline-editor .hwm_tool-belt {
+	position: relative;
+	top: auto;
+	overflow-x: auto;
+}
+.hwm_inline-editor .hwm_more-overlay {
+	position: absolute;
+	inset: calc(100% + 4px) auto auto 50%;
+	width: min(440px, calc(100% - 32px));
+	height: auto;
+	overflow: visible;
+	transform: translateX(-50%);
+	display: block;
+}
+.hwm_inline-editor .hwm_more-sheet {
+	position: relative;
+	top: auto;
+	left: auto;
+	width: 100%;
+	max-width: 100%;
+	max-height: calc(100vh - 96px);
+	overflow-y: auto;
+	padding: 16px;
+	transform: translateY(-10px) scale(0.95);
+}
+.hwm_inline-editor .hwm_more-overlay.hwm_visible .hwm_more-sheet {
+	transform: translateY(0) scale(1);
+}
+/* Tools, paper controls and history share the same toolbar surface. */
+.hwm_editor-toolbar .hwm_toolbar-group {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 5px 10px;
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+}
+.hwm_editor-toolbar .hwm_separator { display: none; }
+.hwm_editor-toolbar .hwm_btn {
+	width: 42px;
+	height: 42px;
+	min-height: 42px;
+	margin-right: 6px;
+	border: 1px solid transparent;
+	border-radius: 9px;
+}
+.hwm_editor-toolbar .hwm_btn:hover:not(.hwm_active) {
+	border-color: var(--background-modifier-border);
+	background: var(--background-secondary);
+}
+.hwm_editor-toolbar .hwm_colors { gap: 8px; margin: 0 8px; }
+.hwm_editor-toolbar .hwm_color-btn {
+	width: 24px;
+	height: 24px;
+	min-width: 24px;
+	min-height: 24px;
+	max-width: 24px;
+	padding: 0 !important;
+	border-radius: 50%;
+	border-width: 2px;
+}
+.hwm_editor-toolbar .hwm_color-btn.hwm_active { box-shadow: 0 0 0 2px var(--background-primary), 0 0 0 4px var(--interactive-accent); }
+.hwm_editor-toolbar .hwm_stroke-size { height: 42px; padding: 0 10px; gap: 9px; }
+.hwm_stroke-size-value { min-width: 30px; color: var(--text-normal); font-size: 13px; font-weight: 700; text-align: center; }
+.hwm_stroke-size-range { width: 62px; accent-color: var(--interactive-accent); cursor: pointer; }
+.hwm_editor-toolbar .hwm_background-picker {
+	width: 30px;
+	height: 30px;
+	padding: 2px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	cursor: pointer;
+	background: transparent;
+}
+.hwm_editor-toolbar .hwm_pattern-select,
+.hwm_editor-toolbar .hwm_spacing-input {
+	height: 30px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 12px;
+}
+.hwm_editor-toolbar .hwm_pattern-select { width: 66px; padding: 0 3px; }
+.hwm_editor-toolbar .hwm_spacing-input { width: 43px; padding: 0 3px; text-align: center; }
+.hwm_editor-toolbar .hwm_action-btn {
+	width: auto;
+	min-width: 68px;
+	height: 42px;
+	padding: 0 15px;
+	gap: 5px;
+	margin-right: 10px;
+}
+.hwm_editor-toolbar .hwm_btn-label { font-size: 12px; font-weight: 650; line-height: 1; }
+
+/* A deliberate left-to-right layout inspired by a paper notebook toolbar. */
+.hwm_editor-toolbar .hwm_clear-btn { order: 10; }
+.hwm_editor-toolbar .hwm_undo-btn { order: 20; }
+.hwm_editor-toolbar .hwm_redo-btn { order: 30; }
+.hwm_editor-toolbar .hwm_stroke-size { order: 40; }
+.hwm_editor-toolbar .hwm_appearance-controls { order: 50; }
+.hwm_editor-toolbar .hwm_colors { order: 60; }
+.hwm_editor-toolbar .hwm_palette-btn { order: 70; }
+.hwm_editor-toolbar .hwm_pen-btn { order: 80; }
+.hwm_editor-toolbar .hwm_eraser-btn { order: 90; }
+.hwm_editor-toolbar .hwm_highlighter-btn { order: 100; }
+.hwm_editor-toolbar .hwm_text-btn { order: 110; }
+.hwm_editor-toolbar .hwm_save-btn { order: 120; }
+.hwm_editor-toolbar .hwm_delete-btn { order: 140; }
+.hwm_palette-panel {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 8px;
+	z-index: 30;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 8px;
+	min-width: 265px;
+	max-width: min(360px, calc(100vw - 24px));
+	padding: 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-primary);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+.hwm_palette-header, .hwm_palette-help, .hwm_palette-list { grid-column: 1 / -1; }
+.hwm_palette-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hwm_palette-heading { font-weight: 700; color: var(--text-normal); }
+.hwm_palette-close {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+}
+.hwm_palette-help { color: var(--text-muted); font-size: 12px; line-height: 1.35; }
+.hwm_palette-picker {
+	width: 34px;
+	height: 30px;
+	padding: 2px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	cursor: pointer;
+	background: transparent;
+}
+.hwm_palette-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.hwm_palette-actions button { min-height: 30px; padding: 4px 8px; font-size: 12px; }
+.hwm_palette-list { display: flex; gap: 7px; flex-wrap: wrap; }
+.hwm_palette-item { position: relative; display: flex; }
+.hwm_palette-swatch {
+	width: 29px;
+	height: 29px;
+	padding: 0;
+	border: 2px solid transparent;
+	border-radius: 50%;
+	background: var(--hwm-btn-color, transparent);
+	cursor: pointer;
+}
+.hwm_palette-swatch.hwm_active { border-color: var(--interactive-accent); box-shadow: 0 0 0 2px var(--background-primary); }
+.hwm_palette-remove {
+	position: absolute;
+	right: -6px;
+	top: -6px;
+	width: 16px;
+	height: 16px;
+	padding: 0 0 1px;
+	border: 1px solid var(--background-primary);
+	border-radius: 50%;
+	background: var(--text-error);
+	color: white;
+	cursor: pointer;
+	font-weight: 700;
+	line-height: 12px;
+}
+.hwm_quick-colour-picker {
+	position: fixed;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+.hwm_colour-popover {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 8px;
+	z-index: 40;
+	width: min(330px, calc(100vw - 28px));
+	display: grid;
+	gap: 10px;
+	padding: 14px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-primary);
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+.hwm_colour-popover-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--text-normal); }
+.hwm_colour-popover-header button {
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 20px;
+	cursor: pointer;
+}
+.hwm_colour-popover-help { color: var(--text-muted); font-size: 12px; }
+.hwm_colour-selected {
+	width: 100%;
+	height: 34px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--hwm-selected-colour);
+}
+.hwm_colour-hex {
+	width: 100%;
+	height: 38px;
+	box-sizing: border-box;
+	padding: 0 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-family: var(--font-monospace);
+	font-size: 14px;
+}
+.hwm_colour-presets { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.hwm_colour-preset {
+	height: 32px;
+	padding: 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 7px;
+	background: var(--hwm-btn-color);
+	cursor: pointer;
+}
+.hwm_colour-popover-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.hwm_colour-popover-actions button { min-height: 38px; padding: 0 12px; }
+@media (max-width: 640px) {
+	.hwm_editor-toolbar .hwm_action-btn { min-width: 60px; padding: 0 10px; }
+	.hwm_editor-toolbar .hwm_btn-label { display: inline; }
+	.hwm_editor-toolbar .hwm_pattern-select { width: 59px; }
+	.hwm_editor-toolbar .hwm_spacing-input { width: 38px; }
+}
+
+
+/* ========================================
+   OBSIDIAN INK FLOW REDESIGN
+   ======================================== */
+.hwm_editor-view {
+	--hwm-primary: #7c3aed;
+	--hwm-primary-container: #7c3aed;
+	--hwm-on-primary-container: #ede0ff;
+	--hwm-surface: #131313;
+	--hwm-surface-container-high: #2a2a2a;
+	--hwm-surface-container-low: #1b1b1c;
+	--hwm-surface-container: #202020;
+	--hwm-surface-variant: #353535;
+	--hwm-on-surface: #e5e2e1;
+	--hwm-on-surface-variant: #ccc3d8;
+	--hwm-outline-variant: #4a4455;
+	--hwm-outline: #393939;
+}
+
+/* Light mode overrides (basic fallback) */
+.theme-light .hwm_editor-view {
+	--hwm-surface: #ffffff;
+	--hwm-surface-container-high: #f0f0f0;
+	--hwm-surface-container-low: #fafafa;
+	--hwm-surface-container: #f5f5f5;
+	--hwm-surface-variant: #e0e0e0;
+	--hwm-on-surface: #111111;
+	--hwm-on-surface-variant: #444444;
+	--hwm-outline-variant: #cccccc;
+	--hwm-outline: #dddddd;
+}
+
+/* --- New Header --- */
+.hwm_new-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 56px; /* h-14 */
+	z-index: 50;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 16px;
+	background: rgba(19, 19, 19, 0.8);
+	backdrop-filter: blur(12px);
+	border-bottom: 1px solid var(--hwm-outline-variant);
+	box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.theme-light .hwm_new-header {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+.hwm_header-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--hwm-on-surface);
+	font-weight: 600;
+	font-size: 18px;
+}
+
+.hwm_header-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	border-radius: 6px;
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	color: var(--hwm-on-surface);
+	transition: background 0.15s, color 0.15s;
+}
+.hwm_header-btn--icon-only {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+.hwm_header-btn--icon-only:hover {
+	background: rgba(128,128,128,0.15);
+}
+.hwm_header-btn--primary {
+	min-width: 68px;
+	height: 36px;
+	padding: 0 12px;
+	color: var(--hwm-primary);
+}
+.hwm_header-btn--primary:hover {
+	background: rgba(124, 58, 237, 0.1);
+}
+
+/* --- Tool Belt --- */
+.hwm_tool-belt {
+	position: sticky;
+	top: 4px;
+	margin: 4px auto;
+	z-index: 40;
+	display: flex;
+	width: max-content;
+	align-items: center;
+	gap: 4px;
+	padding: 6px;
+	direction: ltr;
+	background: rgba(42, 42, 42, 0.9); /* surface-container-high with opacity */
+	backdrop-filter: blur(12px);
+	border-radius: 12px;
+	border: 1px solid var(--hwm-surface-variant);
+	box-shadow: 0 2px 7px rgba(0,0,0,0.12);
+	max-width: calc(100% - 16px);
+	overflow-x: auto;
+}
+.theme-light .hwm_tool-belt {
+	background: rgba(240, 240, 240, 0.9);
+}
+
+.hwm_tool-belt::-webkit-scrollbar {
+	display: none;
+}
+
+.hwm_capsule {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background: rgba(128,128,128,0.1); /* surface-container/50 */
+	border-radius: 8px;
+	padding: 4px;
+}
+.hwm_capsule--colors {
+	gap: 12px;
+	padding: 4px;
+	gap: 8px;
+}
+
+.hwm_belt-separator {
+	width: 1px;
+	height: 24px;
+	background: var(--hwm-outline-variant);
+	opacity: 0.5;
+	border-radius: 1px;
+}
+
+/* --- Tools Buttons --- */
+.hwm_tool-btn {
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	border: none;
+	background: transparent;
+	color: var(--hwm-on-surface-variant);
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.hwm_tool-btn:hover {
+	background: rgba(128,128,128,0.15);
+}
+.hwm_tool-btn.hwm_active {
+	background: var(--hwm-primary-container);
+	color: var(--hwm-on-primary-container);
+	box-shadow: 0 0 8px rgba(124, 58, 237, 0.2);
+}
+.hwm_tool-btn[disabled] {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.hwm_tool-btn svg {
+	width: 16px;
+	height: 16px;
+}
+/* Ensure save and close icons scale well */
+.hwm_header-btn svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* --- Colors --- */
+input[type='color'].hwm_color-swatch {
+	position: relative;
+	flex-shrink: 0 !important;
+	width: 30px !important;
+	height: 30px !important;
+	min-width: 30px !important;
+	min-height: 30px !important;
+	max-width: 30px !important;
+	max-height: 30px !important;
+	box-sizing: border-box !important;
+	border-radius: 50% !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background-color: var(--hwm-btn-color, transparent);
+	appearance: none !important;
+	-webkit-appearance: none !important;
+	border: none !important;
+	outline: none !important;
+}
+.hwm_color-swatch:hover {
+	transform: scale(1.1);
+}
+.hwm_color-swatch:active {
+	transform: scale(0.95);
+}
+.hwm_color-swatch.hwm_active {
+	box-shadow: 0 0 0 2px var(--hwm-surface-container-high), 0 0 0 4px var(--hwm-primary);
+}
+
+/* --- Canvas Area --- */
+.hwm_main-canvas-area {
+	flex: 1;
+	margin-top: 0;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+/* --- Bottom Sheet Overlay --- */
+.hwm_more-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 60;
+	background: transparent;
+	
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s ease;
+}
+.hwm_more-overlay.hwm_visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.hwm_more-sheet {
+	width: max-content;
+	min-width: 280px;
+	max-width: 90%;
+	background: var(--hwm-surface-container-high);
+	border-radius: 12px;
+	border: 1px solid var(--hwm-outline-variant);
+	padding: 16px;
+	direction: ltr !important;
+	box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+	transform: translateX(-50%) translateY(-10px) scale(0.95); opacity: 0;
+	top: 64px;
+	left: 50%;
+	position: absolute;
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hwm_more-overlay.hwm_visible .hwm_more-sheet {
+	transform: translateX(-50%) translateY(0) scale(1);
+	opacity: 1;
+}
+
+.hwm_sheet-drag-handle {
+	display: none;
+	width: 48px;
+	height: 6px;
+	background: var(--hwm-outline-variant);
+	opacity: 0.3;
+	border-radius: 4px;
+	margin: 0 auto 24px auto;
+}
+
+/* Sheet buttons */
+.hwm_sheet-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 12px;
+	border-radius: 6px;
+	border: none;
+	font-weight: 600;
+	font-size: 14px;
+	cursor: pointer;
+	transition: transform 0.1s, background 0.15s;
+}
+.hwm_sheet-btn:active {
+	transform: scale(0.98);
+}
+.hwm_sheet-btn--primary {
+	background: var(--hwm-primary-container);
+	color: var(--hwm-on-primary-container);
+}
+.hwm_sheet-btn--secondary {
+	background: var(--hwm-surface-container);
+	color: var(--hwm-on-surface-variant);
+}
+.hwm_sheet-btn--secondary:hover {
+	background: var(--hwm-surface-container-highest);
+}
+.hwm_sheet-btn--danger {
+	width: 100%;
+	background: transparent;
+	color: #ef4444; /* red-500 */
+}
+.hwm_sheet-btn--danger:hover {
+	background: rgba(239, 68, 68, 0.1);
+}
+.hwm_sheet-btn--close {
+	width: 100%;
+	margin-top: 8px;
+	background: var(--hwm-surface-variant);
+	color: var(--hwm-on-surface);
+}
+
+.hwm_sheet-grid-3 {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
+	margin-bottom: 24px;
+}
+
+.hwm_sheet-grid-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+	margin-bottom: 24px;
+}
+
+.hwm_sheet-section {
+	margin-bottom: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+
+.hwm_color-swatch--glass {
+	display: block;
+	flex: 0 0 30px;
+	width: 30px;
+	height: 30px;
+	min-width: 30px;
+	min-height: 30px;
+	max-width: 30px;
+	max-height: 30px;
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	background: conic-gradient(
+		#ccc 0deg 90deg, #fff 90deg 180deg,
+		#ccc 180deg 270deg, #fff 270deg 360deg
+	) !important;
+	background-size: 12px 12px !important;
+	border: none !important;
+	border-radius: 50% !important;
+	cursor: pointer;
+	position: relative;
+}
+.hwm_sheet-control-box > button.hwm_color-swatch--glass {
+	/* Obsidian's mobile button rules can otherwise impose a rectangular
+	   min-width. Match the native colour inputs exactly. */
+	flex: 0 0 30px !important;
+	width: 30px !important;
+	height: 30px !important;
+	min-width: 30px !important;
+	min-height: 30px !important;
+	max-width: 30px !important;
+	max-height: 30px !important;
+	aspect-ratio: 1 / 1 !important;
+	border-radius: 50% !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+.hwm_color-swatch--glass::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: rgba(255,255,255,0.15);
+}
+
+.hwm_sheet-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+	padding: 0 2px;
+}
+
+.hwm_thick-preview-container {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.hwm_thick-preview-circle {
+	background: var(--hwm-primary);
+	border-radius: 50%;
+	transition: width 0.1s, height 0.1s;
+}
+.hwm_sheet-value-text {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--hwm-on-surface-variant);
+	padding: 0 4px;
+}
+
+.hwm_sheet-title {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--hwm-on-surface);
+}
+
+.hwm_sheet-stepper {
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	background: var(--hwm-surface-variant);
+	border: none;
+	color: var(--hwm-on-surface-variant);
+	cursor: pointer;
+	padding: 0;
+	transition: background 0.15s, transform 0.1s;
+}
+.hwm_sheet-stepper:active {
+	transform: scale(0.9);
+}
+.hwm_sheet-stepper svg {
+	width: 16px !important;
+	height: 16px !important;
+	flex-shrink: 0;
+}
+.hwm_sheet-control-box {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background: transparent;
+	padding: 4px 2px;
+}
+
+
+/* Range input styling */
+.hwm_sheet-range {
+	flex: 1;
+	height: 4px;
+	background: var(--hwm-surface-variant);
+	border-radius: 4px;
+	appearance: none;
+	outline: none;
+	accent-color: var(--hwm-primary);
+}
+
+/* Pattern segmented control */
+.hwm_pattern-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+}
+.hwm_pattern-btn {
+	padding: 6px;
+	border-radius: 6px;
+	background: var(--hwm-surface-container);
+	color: var(--hwm-on-surface-variant);
+	font-size: 12px;
+	font-weight: 600;
+	border: none;
+	cursor: pointer;
+}
+.hwm_pattern-btn.hwm_active {
+	background: var(--hwm-primary-container);
+	color: var(--hwm-on-primary-container);
+}
+
+/* Compact inline menu: preserve touch-friendly controls while avoiding the
+   oversized desktop sheet proportions inside a note on tablets. */
+.hwm_inline-editor .hwm_more-sheet .hwm_sheet-section {
+	gap: 11px;
+	margin-bottom: 15px;
+}
+.hwm_inline-editor .hwm_more-sheet .hwm_sheet-grid-3 {
+	gap: 10px;
+	margin-bottom: 16px;
+}
+.hwm_inline-editor .hwm_more-sheet .hwm_sheet-btn {
+	padding: 10px 9px;
+}
+.hwm_inline-editor .hwm_more-sheet .hwm_sheet-control-box {
+	gap: 12px;
+	padding-block: 4px;
+}
+
+.hwm_sheet-divider {
+	border: 1px solid var(--hwm-outline-variant);
+	opacity: 0.3;
+	margin: 8px 0;
+}
+
+input[type='color'].hwm_color-swatch::-webkit-color-swatch-wrapper {
+	padding: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	box-sizing: border-box !important;
+}
+input[type='color'].hwm_color-swatch::-webkit-color-swatch {
+	border: none !important;
+	border-radius: 50% !important;
+	width: 100% !important;
+	height: 100% !important;
+	box-sizing: border-box !important;
+}
+.hwm_file-picker {
+	display: none;
+}
+
+.hwm_image-menu {
+	position: absolute;
+	left: var(--hwm-image-menu-left);
+	top: var(--hwm-image-menu-top);
+	z-index: 20;
+	display: grid;
+	min-width: 128px;
+	padding: 6px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	background: var(--background-primary);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.hwm_image-menu button {
+	padding: 7px 10px;
+	border: 0;
+	border-radius: 5px;
+	background: transparent;
+	color: var(--text-normal);
+	text-align: start;
+}
+
+.hwm_image-menu button:hover {
+	background: var(--background-modifier-hover);
+}

@@ -1,0 +1,12 @@
+{
+  "svgFolder": "_inline_handwriting_private",
+  "canvasWidth": 600,
+  "canvasHeight": 200,
+  "defaultLineSpacing": 52,
+  "bgMode": "auto",
+  "debugMode": false,
+  "uiLanguage": "auto",
+  "customPalette": [],
+  "defaultPalette": [],
+  "storageNamespaceMigrated": true
+}
